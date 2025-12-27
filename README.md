@@ -140,122 +140,230 @@ graph TD
     Orch -->|Final Report| User
 ```
 
-  ---
+---
 
-  ## 🧑‍🤝‍🧑 Personas & Journeys (Story Bank)
+## 🧑‍🤝‍🧑 Personas & Journeys (Before → After)
 
-  Below are twelve concise personas with their top journeys rendered as Mermaid diagrams for quick stakeholder alignment.
+Each persona illustrates **how things were** versus **how they become** with FARA-GRC.
 
-  ### 1) Audit Lead – "Evidence Hawk"
-  ```mermaid
-  flowchart TD
+---
+
+### 1) Audit Lead – "Evidence Hawk"
+
+| Before | After |
+|--------|-------|
+| Manually screenshot 50+ screens over 2 weeks | One-click template completes in hours |
+| Evidence lives in Word docs with no chain of custody | Forensic bundle with hashes and timestamps |
+| Report is stale the day it ships | Continuous posture tracking |
+
+```mermaid
+flowchart TD
     A[Start Tenant Audit] --> B[Run MFA Posture Template]
     B --> C[Orchestrator drafts plan]
     C --> D[Consensus Swarm executes]
     D --> E[Approval Guard flags risky steps]
     E -->|Approve| F[Evidence bundle generated]
     F --> G[Share report with client]
-  ```
+```
 
-  ### 2) Security Analyst – "Signal Hunter"
-  ```mermaid
-  flowchart LR
+---
+
+### 2) Security Analyst – "Signal Hunter"
+
+| Before | After |
+|--------|-------|
+| Drown in raw logs, miss critical events | S/N filtering surfaces only anomalies |
+| Manual correlation across portals | Coder agent auto-correlates in seconds |
+| Alerts arrive too late | Real-time Slack/Teams notification |
+
+```mermaid
+flowchart LR
     A[Enable monitoring] --> B[Define anomaly threshold]
     B --> C[WebSurfer watches admin changes]
     C --> D[Coder correlates logs]
-    D --> E{S/N > 100?}
+    D --> E{Signal above threshold}
     E -->|Yes| F[Auto-notify Slack]
     E -->|No| G[Escalate to human review]
-  ```
+```
 
-  ### 3) Compliance Officer – "Policy Guardian"
-  ```mermaid
-  flowchart TD
+---
+
+### 3) Compliance Officer – "Policy Guardian"
+
+| Before | After |
+|--------|-------|
+| Spreadsheet checklists updated quarterly | Live control status dashboard |
+| No proof of who checked what | Immutable approval log |
+| CAPA drafted manually after findings | Auto-generated corrective action drafts |
+
+```mermaid
+flowchart TD
     A[Select ISO 27001 pack] --> B[Approval Guard reviews data writes]
     B --> C[Run checklist in read-only]
-    C --> D{Nonconformance?}
+    C --> D{Nonconformance found}
     D -->|Yes| E[Generate CAPA draft]
     D -->|No| F[Certify control]
-  ```
+```
 
-  ### 4) MSP Owner – "Marketplace Builder"
-  ```mermaid
-  flowchart LR
+---
+
+### 4) MSP Owner – "Marketplace Builder"
+
+| Before | After |
+|--------|-------|
+| Build bespoke scripts per client | Author once, sell many via marketplace |
+| No recurring revenue from IP | Template royalties on every install |
+| Hard to scale expertise | Templates scale without extra headcount |
+
+```mermaid
+flowchart LR
     A[Author template] --> B[Test with sandbox tenant]
     B --> C[Publish to marketplace]
     C --> D[Customer installs]
     D --> E[Revenue share payout]
-  ```
+```
 
-  ### 5) Blue Team Lead – "Incident Sentinel"
-  ```mermaid
-  flowchart TD
-    A[Set "Tell me when" trigger] --> B[Watch for admin role changes]
-    B --> C{Role escalated?}
-    C -->|Yes| D[Freeze session + alert]
+---
+
+### 5) Blue Team Lead – "Incident Sentinel"
+
+| Before | After |
+|--------|-------|
+| Poll admin logs hourly by hand | Continuous watch with triggers |
+| Find privilege escalation days later | Instant freeze and alert |
+| Incident timeline reconstructed manually | Chain-of-Thought replay available |
+
+```mermaid
+flowchart TD
+    A[Set monitoring trigger] --> B[Watch for admin role changes]
+    B --> C{Role escalated}
+    C -->|Yes| D[Freeze session and alert]
     C -->|No| E[Continue monitoring]
-  ```
+```
 
-  ### 6) Auditor-in-Training – "Apprentice"
-  ```mermaid
-  flowchart LR
+---
+
+### 6) Auditor-in-Training – "Apprentice"
+
+| Before | After |
+|--------|-------|
+| Watch videos, take quizzes | Learn by doing in sandbox |
+| No visibility into expert reasoning | See agent Chain-of-Thought traces |
+| Months to become productive | Accelerated ramp with guided scenarios |
+
+```mermaid
+flowchart LR
     A[Pick training scenario] --> B[Follow guided steps]
     B --> C[See agent reasoning traces]
     C --> D[Submit answers]
     D --> E[Receive scored feedback]
-  ```
+```
 
-  ### 7) Data Protection Officer – "GDPR Sentinel"
-  ```mermaid
-  flowchart TD
+---
+
+### 7) Data Protection Officer – "GDPR Sentinel"
+
+| Before | After |
+|--------|-------|
+| Manual data discovery across SharePoint | FileSurfer scans automatically |
+| PII classification by gut feel | Coder classifies with ML model |
+| DSR responses take weeks | Batch deletion tasks generated instantly |
+
+```mermaid
+flowchart TD
     A[Run GDPR discovery template] --> B[FileSurfer scans DSR locations]
     B --> C[Coder classifies PII]
-    C --> D{High-risk PII found?}
-    D -->|Yes| E[Generate deletion/retention tasks]
+    C --> D{High-risk PII found}
+    D -->|Yes| E[Generate deletion tasks]
     D -->|No| F[Log compliance proof]
-  ```
+```
 
-  ### 8) CTO – "Risk Owner"
-  ```mermaid
-  flowchart LR
+---
+
+### 8) CTO – "Risk Owner"
+
+| Before | After |
+|--------|-------|
+| Risk reports are static PDFs | Live Bayesian risk dashboard |
+| No scenario modeling | What-if simulations on demand |
+| Reactive firefighting | Proactive mitigation sprints |
+
+```mermaid
+flowchart LR
     A[Review risk dashboard] --> B[Bayesian risk roll-up]
-    B --> C[What-if on change freeze]
-    C --> D{Risk > threshold?}
+    B --> C[Run what-if scenario]
+    C --> D{Risk above threshold}
     D -->|Yes| E[Schedule mitigation sprint]
     D -->|No| F[Maintain posture]
-  ```
+```
 
-  ### 9) Red Team Consultant – "Control Tester"
-  ```mermaid
-  flowchart TD
+---
+
+### 9) Red Team Consultant – "Control Tester"
+
+| Before | After |
+|--------|-------|
+| Spin up manual attack labs | Load adversary simulation template |
+| Risk of breaking production | Approval Guard sandboxes side effects |
+| Findings documented by hand | Auto-generated misconfig report |
+
+```mermaid
+flowchart TD
     A[Load adversary simulation template] --> B[Simulate risky actions in sandbox]
     B --> C[Approval Guard contains side effects]
     C --> D[Report misconfig findings]
-  ```
+```
 
-  ### 10) Governance Lead – "Board Narrator"
-  ```mermaid
-  flowchart LR
+---
+
+### 10) Governance Lead – "Board Narrator"
+
+| Before | After |
+|--------|-------|
+| Manually compile evidence for board | One-click executive summary |
+| Hard to explain technical findings | Consensus decisions in plain English |
+| Export to slides takes hours | PDF/Slides export in seconds |
+
+```mermaid
+flowchart LR
     A[Request board deck] --> B[Summarize evidence trail]
     B --> C[Attach consensus decisions]
-    C --> D[Export to PDF/Slides]
-  ```
+    C --> D[Export to PDF or Slides]
+```
 
-  ### 11) DevSecOps Engineer – "Pipeline Integrator"
-  ```mermaid
-  flowchart TD
+---
+
+### 11) DevSecOps Engineer – "Pipeline Integrator"
+
+| Before | After |
+|--------|-------|
+| Security checks are an afterthought | Preflight tenant checks in CI |
+| Misconfigs discovered post-deploy | Failing controls block the build |
+| No audit trail in pipelines | CLI logs every decision |
+
+```mermaid
+flowchart TD
     A[Add CLI to CI pipeline] --> B[Preflight tenant checks]
-    B --> C{Failing controls?}
+    B --> C{Failing controls}
     C -->|Yes| D[Block deploy]
     C -->|No| E[Promote build]
-  ```
+```
 
-  ### 12) Regulator/Assessor – "Independent Verifier"
-  ```mermaid
-  flowchart LR
+---
+
+### 12) Regulator/Assessor – "Independent Verifier"
+
+| Before | After |
+|--------|-------|
+| Trust auditor word and screenshots | Replay package with full trace |
+| No way to verify reasoning | Chain-of-Thought logs inspectable |
+| Integrity disputes are common | Timestamped approvals prove compliance |
+
+```mermaid
+flowchart LR
     A[Receive replay package] --> B[Inspect Chain-of-Thought logs]
-    B --> C[Verify timestamps + approvals]
-    C --> D{Integrity holds?}
+    B --> C[Verify timestamps and approvals]
+    C --> D{Integrity holds}
     D -->|Yes| E[Accept audit]
     D -->|No| F[Request clarification]
   ```
