@@ -626,6 +626,11 @@ Always run `poe pyright` and `poe mypy` before committing.
 
 ## Common Tasks for Contributors
 
+### Frontend Changes (must read first)
+- Before touching any frontend code, open and follow `frontend/visual-guidelines.md`. Treat it as a hard gate: do not start coding until you have read/checked it for the work you’re doing.
+- Apply the guideline checklist (spacing, typography, responsiveness, tooltips) to every PR that alters UI.
+- Prefer existing components and tokens; avoid introducing ad-hoc spacing or colors.
+
 ### Adding a New Agent
 ```python
 # 1. Subclass BaseChatAgent (from autogen_agentchat)

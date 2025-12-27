@@ -14,14 +14,9 @@ import {
   Space,
   Tag,
   Tooltip,
-  Badge,
-  Alert,
-  Row,
-  Col,
-  Statistic,
   theme,
   Popconfirm,
-  Popover
+  Upload
 } from "antd";
 import { 
   PlusOutlined, 
@@ -717,7 +712,7 @@ execution:
         </div>
 
         <List
-          grid={{ gutter: 12, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 4 }}
+          grid={{ gutter: 12, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3 }}
           dataSource={filteredTemplates}
           renderItem={(template) => (
             <List.Item>
@@ -726,18 +721,39 @@ execution:
                 hoverable
                 style={{ height: '100%' }}
                 actions={[
-                  <Tooltip title="Launch audit">
-                    <PlayCircleOutlined onClick={() => handleRunTemplate(template)} />
-                  </Tooltip>,
-                  <Tooltip title="Export as .fara">
-                    <DownloadOutlined onClick={() => handleExportTemplate(template)} />
-                  </Tooltip>,
-                  <Tooltip title="Edit">
-                    <EditOutlined onClick={() => handleEditTemplate(template)} />
-                  </Tooltip>,
-                  <Tooltip title="Delete">
-                    <DeleteOutlined style={{ color: token.colorError }} onClick={() => handleDeleteTemplate(template.id)} />
-                  </Tooltip>
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<PlayCircleOutlined />}
+                    onClick={() => handleRunTemplate(template)}
+                  >
+                    Run
+                  </Button>,
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<DownloadOutlined />}
+                    onClick={() => handleExportTemplate(template)}
+                  >
+                    Export
+                  </Button>,
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<EditOutlined />}
+                    onClick={() => handleEditTemplate(template)}
+                  >
+                    Edit
+                  </Button>,
+                  <Button
+                    type="link"
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleDeleteTemplate(template.id)}
+                  >
+                    Delete
+                  </Button>
                 ]}
               >
                 <Space direction="vertical" size={8} style={{ width: '100%' }}>
