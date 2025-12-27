@@ -21,6 +21,7 @@ import {
   Statistic,
   theme,
   Popconfirm,
+  Popover
 } from "antd";
 import { 
   PlusOutlined, 
@@ -37,7 +38,8 @@ import {
   PlayCircleOutlined,
   GlobalOutlined,
   KeyOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  InfoCircleOutlined
 } from "@ant-design/icons";
 import { useSettingsStore } from "../../../store";
 import { useConfigStore } from "../../../../hooks/store";
@@ -567,15 +569,44 @@ execution:
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title level={4} style={{ margin: 0 }}>Audit Templates</Typography.Title>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
         <Space>
+          <Typography.Title level={4} style={{ margin: 0 }}>Audit Templates</Typography.Title>
+          <Popover 
+            content={
+              <div style={{ maxWidth: 300 }}>
+                <Typography.Paragraph>
+                  <strong>How Templates Work:</strong> Templates are YAML-defined audit workflows that instruct FARA-GRC agents 
+                  on checks, navigation paths, and evidence requirements. The Orchestrator translates these into 
+                  step-by-step forensic actions.
+                </Typography.Paragraph>
+                <Typography.Text strong>Capabilities:</Typography.Text>
+                <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 0 }}>
+                  <li>Declarative checks</li>
+                  <li>Forensic evidence</li>
+                  <li>Approval workflows</li>
+                </ul>
+                <div style={{ marginTop: 12 }}>
+                  <Tag color="blue">Coming Soon</Tag>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    Import/Export, Marketplace
+                  </Typography.Text>
+                </div>
+              </div>
+            } 
+            title="About Templates"
+            trigger="click"
+          >
+            <InfoCircleOutlined style={{ color: token.colorTextSecondary, cursor: 'pointer', fontSize: 16 }} />
+          </Popover>
+        </Space>
+        <Space wrap>
           <Input 
             placeholder="Search templates..." 
             prefix={<SearchOutlined />} 
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
-            style={{ width: 250 }}
+            style={{ width: 200 }}
           />
           <Popconfirm
             title="Reset Templates?"
@@ -597,69 +628,11 @@ execution:
       </div>
       
       <Alert
-        message={
-          <Space>
-            <SafetyCertificateOutlined style={{ color: token.colorSuccess }} />
-            <span style={{ fontWeight: 600 }}>MVP Phase: Template Marketplace Preview</span>
-          </Space>
-        }
-        description={
-          <div style={{ marginTop: 12 }}>
-            <Row gutter={[24, 16]}>
-              <Col xs={24} md={16}>
-                <Typography.Paragraph style={{ marginBottom: 16 }}>
-                  <strong>How Templates Work:</strong> Templates are YAML-defined audit workflows that instruct FARA-GRC agents 
-                  on checks, navigation paths, and evidence requirements. The Orchestrator translates these into 
-                  step-by-step forensic actions.
-                </Typography.Paragraph>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Statistic 
-                      title="Available Templates" 
-                      value={templates.length} 
-                      prefix={<FileProtectOutlined />} 
-                      valueStyle={{ fontSize: 20, fontWeight: 500 }}
-                    />
-                  </Col>
-                  <Col span={12}>
-                    <Statistic 
-                      title="Security Checks" 
-                      value={templates.reduce((acc, t) => acc + (t.content.match(/- name:/g) || []).length, 0)} 
-                      prefix={<SafetyCertificateOutlined />} 
-                      valueStyle={{ fontSize: 20, fontWeight: 500 }}
-                    />
-                  </Col>
-                </Row>
-              </Col>
-              <Col xs={24} md={8}>
-                <div style={{ 
-                  borderLeft: `1px solid ${token.colorBorderSecondary}`, 
-                  paddingLeft: 24, 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center'
-                }}>
-                  <Typography.Text strong style={{ marginBottom: 8, display: 'block' }}>Capabilities:</Typography.Text>
-                  <Space direction="vertical" size={4}>
-                    <Badge status="processing" text="Declarative checks" />
-                    <Badge status="processing" text="Forensic evidence" />
-                    <Badge status="processing" text="Approval workflows" />
-                  </Space>
-                  <div style={{ marginTop: 16 }}>
-                    <Tag color="blue">Coming Soon</Tag>
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      Import/Export, Marketplace
-                    </Typography.Text>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        }
-        type="success"
-        showIcon={false}
-        style={{ marginBottom: 24, border: `1px solid ${token.colorSuccessBorder}` }}
+        message="MVP Phase: Template Marketplace Preview"
+        description="Select a template below to launch a forensic audit session. Use the info icon above to learn more about template capabilities."
+        type="info"
+        showIcon
+        style={{ marginBottom: 24 }}
       />
 
       <List
