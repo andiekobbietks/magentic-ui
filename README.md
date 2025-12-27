@@ -31,6 +31,97 @@ FARA-GRC is not just a tool; it's a **paradigm shift**. It reimagines auditing a
 
 ---
 
+## 🔤 What Does "FARA" Mean?
+
+**FARA** stands for **Forensic AI-Reasoned Automation**.
+
+| Letter | Meaning | Why It Matters |
+|--------|---------|----------------|
+| **F** | **Forensic** | Every action produces court-admissible evidence with timestamps, hashes, and chain-of-custody metadata. |
+| **A** | **AI** | Large Language Models (LLMs) provide the perception and reasoning layer. |
+| **R** | **Reasoned** | Chain-of-Thought traces make every decision explainable and auditable. |
+| **A** | **Automation** | Replaces manual click-and-screenshot workflows with autonomous agents. |
+
+**GRC** is the industry-standard acronym for **Governance, Risk & Compliance**—the discipline of ensuring organizations follow laws, regulations, and internal policies.
+
+Together, **FARA-GRC** = *"Forensic AI-Reasoned Automation for Governance, Risk & Compliance."*
+
+---
+
+## 🤖 Computer-Use Agents: Where FARA-GRC Fits
+
+### The Taxonomy of AI Agents
+
+The term **"Computer-Use Agent"** (CUA) describes AI systems that interact with computers the way humans do—clicking buttons, reading screens, typing text. Here is a simplified taxonomy:
+
+```mermaid
+flowchart TD
+    subgraph "AI Agent Landscape"
+        CUA[Computer-Use Agents]
+        CUA --> RPA[RPA Bots]
+        CUA --> VLM[Vision-Language Models]
+        CUA --> MAS[Multi-Agent Systems]
+    end
+
+    RPA --> UiPath[UiPath / Power Automate]
+    VLM --> Claude[Claude Computer Use]
+    VLM --> GPT4V[GPT-4 Vision]
+    MAS --> AutoGen[AutoGen / CrewAI]
+
+    MAS --> FARA[FARA-GRC]
+
+    style FARA fill:#22c55e,stroke:#16a34a,color:#fff
+```
+
+| Category | Examples | How They Work |
+|----------|----------|---------------|
+| **RPA Bots** | UiPath, Power Automate | Scripted macros; brittle, break on UI changes |
+| **Vision-Language Models** | Claude Computer Use, GPT-4V | See screen, reason, act; single-agent |
+| **Multi-Agent Systems** | AutoGen, CrewAI, Magentic-UI | Multiple specialized agents collaborate |
+
+### Where FARA-GRC Sits: A Specialized Superset
+
+FARA-GRC is a **domain-specialized superset** of Magentic-UI:
+
+```mermaid
+flowchart LR
+    subgraph "Magentic-UI Base"
+        O[Orchestrator]
+        W[WebSurfer]
+        C[Coder]
+        F[FileSurfer]
+        G[Approval Guard]
+    end
+
+    subgraph "FARA-GRC Superset"
+        O
+        W
+        C
+        F
+        G
+        T[Template Marketplace]
+        E[Forensic Evidence Chain]
+        S[Consensus Swarm]
+        B[Bayesian Risk Engine]
+    end
+
+    style T fill:#3b82f6,stroke:#2563eb,color:#fff
+    style E fill:#3b82f6,stroke:#2563eb,color:#fff
+    style S fill:#3b82f6,stroke:#2563eb,color:#fff
+    style B fill:#3b82f6,stroke:#2563eb,color:#fff
+```
+
+| Layer | What It Provides |
+|-------|------------------|
+| **Magentic-UI (Base)** | General-purpose multi-agent orchestration with human-in-the-loop |
+| **FARA-GRC (Superset)** | Domain-specific additions for GRC: forensic evidence, consensus verification, risk quantification, and a template marketplace |
+
+**In plain terms:**
+- Magentic-UI is a *general-purpose computer-use agent framework*.
+- FARA-GRC *specializes* it for the compliance/audit domain, adding forensic integrity, mathematical risk models, and a business layer (templates, training, marketplace).
+
+---
+
 ## 🧠 Mathematical Foundations: Science, Not Magic
 
 FARA-GRC is grounded in three core mathematical frameworks. We don't just "use AI"; we apply rigorous scientific principles to ensure trust and reliability.
