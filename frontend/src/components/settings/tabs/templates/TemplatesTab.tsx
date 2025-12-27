@@ -19,6 +19,8 @@ import {
   Row,
   Col,
   Statistic,
+  theme,
+  Popconfirm,
 } from "antd";
 import { 
   PlusOutlined, 
@@ -34,7 +36,8 @@ import {
   FileProtectOutlined,
   PlayCircleOutlined,
   GlobalOutlined,
-  KeyOutlined
+  KeyOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
 import { useSettingsStore } from "../../../store";
 
@@ -57,6 +60,7 @@ interface TemplatesTabProps {
 }
 
 const TemplatesTab: React.FC<TemplatesTabProps> = ({ config, handleUpdateConfig }) => {
+  const { token } = theme.useToken();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
@@ -67,25 +71,17 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ config, handleUpdateConfig 
   // Helper to get icon based on template tags/name
   const getTemplateIcon = (template: Template) => {
     const text = (template.name + template.tags.join(" ")).toLowerCase();
-    if (text.includes("mfa") || text.includes("authentication")) return <SafetyCertificateOutlined style={{ color: '#52c41a', fontSize: '24px' }} />;
-    if (text.includes("conditional") || text.includes("access")) return <LockOutlined style={{ color: '#1890ff', fontSize: '24px' }} />;
-    if (text.includes("pim") || text.includes("privileged")) return <KeyOutlined style={{ color: '#faad14', fontSize: '24px' }} />;
-    if (text.includes("dlp") || text.includes("data")) return <FileProtectOutlined style={{ color: '#f5222d', fontSize: '24px' }} />;
+    if (text.includes("mfa") || text.includes("authentication")) return <SafetyCertificateOutlined style={{ color: token.colorSuccess, fontSize: '24px' }} />;
+    if (text.includes("conditional") || text.includes("access")) return <LockOutlined style={{ color: token.colorPrimary, fontSize: '24px' }} />;
+    if (text.includes("pim") || text.includes("privileged")) return <KeyOutlined style={{ color: token.colorWarning, fontSize: '24px' }} />;
+    if (text.includes("dlp") || text.includes("data")) return <FileProtectOutlined style={{ color: token.colorError, fontSize: '24px' }} />;
     if (text.includes("exchange") || text.includes("mail")) return <MailOutlined style={{ color: '#722ed1', fontSize: '24px' }} />;
     if (text.includes("sharepoint") || text.includes("onedrive")) return <CloudServerOutlined style={{ color: '#13c2c2', fontSize: '24px' }} />;
     if (text.includes("teams")) return <TeamOutlined style={{ color: '#6959CD', fontSize: '24px' }} />;
-    return <GlobalOutlined style={{ color: '#8c8c8c', fontSize: '24px' }} />;
+    return <GlobalOutlined style={{ color: token.colorTextSecondary, fontSize: '24px' }} />;
   };
 
-  // Load templates from backend or local storage
-  useEffect(() => {
-    // For now, load from localStorage or initialize with examples
-    const savedTemplates = localStorage.getItem('fara-templates');
-    if (savedTemplates) {
-      setTemplates(JSON.parse(savedTemplates));
-    } else {
-      // Initialize with comprehensive example templates for MVP demonstration
-      const exampleTemplates: Template[] = [
+  const getDefaultTemplates = (): Template[] => [
         {
           id: 'mfa-audit',
           name: 'MFA Posture Check',
@@ -470,10 +466,26 @@ execution:
 `
         }
       ];
-      setTemplates(exampleTemplates);
-      localStorage.setItem('fara-templates', JSON.stringify(exampleTemplates));
+
+  // Load templates from backend or local storage
+  useEffect(() => {
+    // For now, load from localStorage or initialize with examples
+    const savedTemplates = localStorage.getItem('fara-templates');
+    if (savedTemplates) {
+      setTemplates(JSON.parse(savedTemplates));
+    } else {
+      const defaults = getDefaultTemplates();
+      setTemplates(defaults);
+      localStorage.setItem('fara-templates', JSON.stringify(defaults));
     }
   }, []);
+
+  const handleResetTemplates = () => {
+    const defaults = getDefaultTemplates();
+    setTemplates(defaults);
+    localStorage.setItem('fara-templates', JSON.stringify(defaults));
+    message.success('Templates reset to defaults');
+  };
 
   const saveTemplates = (newTemplates: Template[]) => {
     setTemplates(newTemplates);
@@ -554,6 +566,15 @@ execution:
             onChange={e => setSearchText(e.target.value)}
             style={{ width: 250 }}
           />
+          <Popconfirm
+            title="Reset Templates?"
+            description="This will restore the default templates and delete any custom ones."
+            onConfirm={handleResetTemplates}
+            okText="Yes, Reset"
+            cancelText="Cancel"
+          >
+            <Button icon={<ReloadOutlined />}>Reset</Button>
+          </Popconfirm>
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -567,43 +588,54 @@ execution:
       <Alert
         message={
           <Space>
-            <SafetyCertificateOutlined />
+            <SafetyCertificateOutlined style={{ color: token.colorSuccess }} />
             <span style={{ fontWeight: 600 }}>MVP Phase: Template Marketplace Preview</span>
           </Space>
         }
         description={
-          <div style={{ marginTop: 8 }}>
+          <div style={{ marginTop: 12 }}>
             <Row gutter={[24, 16]}>
               <Col xs={24} md={16}>
-                <Typography.Paragraph>
+                <Typography.Paragraph style={{ marginBottom: 16 }}>
                   <strong>How Templates Work:</strong> Templates are YAML-defined audit workflows that instruct FARA-GRC agents 
                   on checks, navigation paths, and evidence requirements. The Orchestrator translates these into 
                   step-by-step forensic actions.
                 </Typography.Paragraph>
-                <Space size="large" style={{ marginTop: 8 }}>
-                  <Statistic 
-                    title="Available Templates" 
-                    value={templates.length} 
-                    prefix={<FileProtectOutlined />} 
-                    valueStyle={{ fontSize: 16 }}
-                  />
-                  <Statistic 
-                    title="Security Checks" 
-                    value={templates.reduce((acc, t) => acc + (t.content.match(/- name:/g) || []).length, 0)} 
-                    prefix={<SafetyCertificateOutlined />} 
-                    valueStyle={{ fontSize: 16 }}
-                  />
-                </Space>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Statistic 
+                      title="Available Templates" 
+                      value={templates.length} 
+                      prefix={<FileProtectOutlined />} 
+                      valueStyle={{ fontSize: 20, fontWeight: 500 }}
+                    />
+                  </Col>
+                  <Col span={12}>
+                    <Statistic 
+                      title="Security Checks" 
+                      value={templates.reduce((acc, t) => acc + (t.content.match(/- name:/g) || []).length, 0)} 
+                      prefix={<SafetyCertificateOutlined />} 
+                      valueStyle={{ fontSize: 20, fontWeight: 500 }}
+                    />
+                  </Col>
+                </Row>
               </Col>
               <Col xs={24} md={8}>
-                <div style={{ borderLeft: '1px solid rgba(0,0,0,0.06)', paddingLeft: 24, height: '100%' }}>
-                  <Typography.Text strong>Capabilities:</Typography.Text>
-                  <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 0 }}>
-                    <li>🎯 Declarative checks</li>
-                    <li>📸 Forensic evidence</li>
-                    <li>🔐 Approval workflows</li>
-                  </ul>
-                  <div style={{ marginTop: 12 }}>
+                <div style={{ 
+                  borderLeft: `1px solid ${token.colorBorderSecondary}`, 
+                  paddingLeft: 24, 
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}>
+                  <Typography.Text strong style={{ marginBottom: 8, display: 'block' }}>Capabilities:</Typography.Text>
+                  <Space direction="vertical" size={4}>
+                    <Badge status="processing" text="Declarative checks" />
+                    <Badge status="processing" text="Forensic evidence" />
+                    <Badge status="processing" text="Approval workflows" />
+                  </Space>
+                  <div style={{ marginTop: 16 }}>
                     <Tag color="blue">Coming Soon</Tag>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       Import/Export, Marketplace
@@ -616,7 +648,7 @@ execution:
         }
         type="success"
         showIcon={false}
-        style={{ marginBottom: 24 }}
+        style={{ marginBottom: 24, border: `1px solid ${token.colorSuccessBorder}` }}
       />
 
       <List
