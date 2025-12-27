@@ -39,10 +39,13 @@ import {
   GlobalOutlined,
   KeyOutlined,
   ReloadOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  DownloadOutlined,
+  UploadOutlined
 } from "@ant-design/icons";
 import { useSettingsStore } from "../../../store";
 import { useConfigStore } from "../../../../hooks/store";
+import JSZip from "jszip";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -561,6 +564,76 @@ execution:
     if (onNewSession) onNewSession();
   };
 
+  const handleExportTemplate = async (template: Template) => {
+    try {
+      const zip = new JSZip();
+      
+      // Obscure the content by base64 encoding it inside the zip
+      // and naming the file something proprietary
+      const proprietaryContent = btoa(template.content);
+      zip.file("audit.logic", proprietaryContent);
+      
+      const metadata = {
+        name: template.name,
+        description: template.description,
+        version: template.version,
+        author: template.author,
+        tags: template.tags,
+        exportedAt: Date.now()
+      };
+      zip.file("manifest.json", JSON.stringify(metadata, null, 2));
+      
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${template.name.replace(/\s+/g, '_').toLowerCase()}.fara`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      message.success(`Exported ${template.name} as .fara package`);
+    } catch (error) {
+      console.error("Export failed:", error);
+      message.error("Failed to export template");
+    }
+  };
+
+  const handleImportTemplate = async (file: File) => {
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const manifestFile = zip.file("manifest.json");
+      const logicFile = zip.file("audit.logic");
+      
+      if (!manifestFile || !logicFile) {
+        throw new Error("Invalid .fara package format");
+      }
+      
+      const manifest = JSON.parse(await manifestFile.async("string"));
+      const proprietaryContent = await logicFile.async("string");
+      const content = atob(proprietaryContent);
+      
+      const newTemplate: Template = {
+        id: `template-${Date.now()}`,
+        name: manifest.name,
+        description: manifest.description,
+        version: manifest.version,
+        author: manifest.author,
+        tags: manifest.tags,
+        content: content
+      };
+      
+      const newTemplates = [...templates, newTemplate];
+      saveTemplates(newTemplates);
+      message.success(`Imported ${newTemplate.name} successfully`);
+    } catch (error) {
+      console.error("Import failed:", error);
+      message.error("Failed to import .fara package. Ensure it is a valid audit template.");
+    }
+    return false; // Prevent default upload behavior
+  };
+
   const filteredTemplates = templates.filter(t => 
     t.name.toLowerCase().includes(searchText.toLowerCase()) || 
     t.description.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -568,25 +641,34 @@ execution:
   );
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <Space>
-          <Typography.Title level={4} style={{ margin: 0 }}>Audit Templates</Typography.Title>
+    <div style={{ width: '100%' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: 24, 
+        flexWrap: 'wrap', 
+        gap: 16 
+      }}>
+        <Space size="middle" style={{ flexShrink: 0 }}>
+          <Typography.Title level={4} style={{ margin: 0, whiteSpace: 'nowrap' }}>
+            Audit Templates
+          </Typography.Title>
           <Popover 
             content={
-              <div style={{ maxWidth: 300 }}>
+              <div style={{ maxWidth: 320 }}>
                 <Typography.Paragraph>
-                  <strong>How Templates Work:</strong> Templates are YAML-defined audit workflows that instruct FARA-GRC agents 
+                  <strong>How Templates Work:</strong> Templates are proprietary audit workflows that instruct FARA-GRC agents 
                   on checks, navigation paths, and evidence requirements. The Orchestrator translates these into 
                   step-by-step forensic actions.
                 </Typography.Paragraph>
                 <Typography.Text strong>Capabilities:</Typography.Text>
-                <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 0 }}>
+                <ul style={{ paddingLeft: 20, marginTop: 8, marginBottom: 0 }}>
                   <li>Declarative checks</li>
                   <li>Forensic evidence</li>
                   <li>Approval workflows</li>
                 </ul>
-                <div style={{ marginTop: 12 }}>
+                <div style={{ marginTop: 16 }}>
                   <Tag color="blue">Coming Soon</Tag>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     Import/Export, Marketplace
@@ -597,42 +679,59 @@ execution:
             title="About Templates"
             trigger="click"
           >
-            <InfoCircleOutlined style={{ color: token.colorTextSecondary, cursor: 'pointer', fontSize: 16 }} />
+            <InfoCircleOutlined style={{ color: token.colorTextSecondary, cursor: 'pointer', fontSize: 18 }} />
           </Popover>
         </Space>
-        <Space wrap>
+        
+        <div style={{ 
+          display: 'flex', 
+          gap: 8, 
+          flexWrap: 'wrap', 
+          flex: 1, 
+          justifyContent: 'flex-end',
+          minWidth: '300px'
+        }}>
           <Input 
             placeholder="Search templates..." 
             prefix={<SearchOutlined />} 
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
-            style={{ width: 200 }}
+            style={{ width: '100%', maxWidth: 240 }}
           />
-          <Popconfirm
-            title="Reset Templates?"
-            description="This will restore the default templates and delete any custom ones."
-            onConfirm={handleResetTemplates}
-            okText="Yes, Reset"
-            cancelText="Cancel"
-          >
-            <Button icon={<ReloadOutlined />}>Reset</Button>
-          </Popconfirm>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleCreateTemplate}
-          >
-            Create New
-          </Button>
-        </Space>
+          <Space size={8}>
+            <Popconfirm
+              title="Reset Templates?"
+              description="This will restore the default templates and delete any custom ones."
+              onConfirm={handleResetTemplates}
+              okText="Yes, Reset"
+              cancelText="Cancel"
+            >
+              <Button icon={<ReloadOutlined />}>Reset</Button>
+            </Popconfirm>
+            <Upload
+              accept=".fara"
+              showUploadList={false}
+              beforeUpload={handleImportTemplate}
+            >
+              <Button icon={<UploadOutlined />}>Import .fara</Button>
+            </Upload>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleCreateTemplate}
+            >
+              Create New
+            </Button>
+          </Space>
+        </div>
       </div>
       
       <Alert
         message="MVP Phase: Template Marketplace Preview"
-        description="Select a template below to launch a forensic audit session. Use the info icon above to learn more about template capabilities."
+        description="Select a template to launch a forensic audit session. Click the info icon above for details."
         type="info"
         showIcon
-        style={{ marginBottom: 24 }}
+        style={{ marginBottom: 24, borderRadius: 8 }}
       />
 
       <List
@@ -642,9 +741,14 @@ execution:
           <List.Item>
             <Card
               hoverable
+              style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+              bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '16px' }}
               actions={[
                 <Tooltip title="Run this audit">
                   <Button type="text" icon={<PlayCircleOutlined />} onClick={() => handleRunTemplate(template)}>Run</Button>
+                </Tooltip>,
+                <Tooltip title="Export as .fara">
+                  <Button type="text" icon={<DownloadOutlined />} onClick={() => handleExportTemplate(template)}>Export</Button>
                 </Tooltip>,
                 <Tooltip title="Edit Template">
                   <Button type="text" icon={<EditOutlined />} onClick={() => handleEditTemplate(template)}>Edit</Button>
@@ -657,26 +761,33 @@ execution:
               <Card.Meta
                 avatar={getTemplateIcon(template)}
                 title={
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ whiteSpace: 'normal' }}>{template.name}</span>
-                  </div>
+                  <Typography.Text strong style={{ fontSize: 16, display: 'block', marginBottom: 4 }}>
+                    {template.name}
+                  </Typography.Text>
                 }
                 description={
-                  <div style={{ height: 100, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <Typography.Paragraph 
-                      ellipsis={{ rows: 2 }} 
-                      style={{ marginBottom: 8, flex: 1 }}
+                      ellipsis={{ rows: 3 }} 
+                      type="secondary"
+                      style={{ margin: 0, fontSize: 13, lineHeight: '1.5' }}
                     >
                       {template.description}
                     </Typography.Paragraph>
-                    <div style={{ marginTop: 'auto' }}>
-                      <Space size={[0, 8]} wrap>
-                        <Tag color="blue">v{template.version}</Tag>
-                        {template.tags.slice(0, 3).map(tag => (
-                          <Tag key={tag} color={tag === 'critical' ? 'red' : 'orange'}>{tag}</Tag>
-                        ))}
-                        {template.tags.length > 3 && <Tag>+{template.tags.length - 3}</Tag>}
-                      </Space>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 8px' }}>
+                      <Tag color="blue" style={{ margin: 0 }}>v{template.version}</Tag>
+                      {template.tags.slice(0, 3).map(tag => (
+                        <Tag 
+                          key={tag} 
+                          color={tag === 'critical' ? 'red' : 'orange'}
+                          style={{ margin: 0 }}
+                        >
+                          {tag}
+                        </Tag>
+                      ))}
+                      {template.tags.length > 3 && (
+                        <Tag style={{ margin: 0 }}>+{template.tags.length - 3}</Tag>
+                      )}
                     </div>
                   </div>
                 }
@@ -694,7 +805,7 @@ execution:
         width={800}
         footer={[
           <Button key="advanced" icon={<CodeOutlined />} onClick={toggleAdvancedMode}>
-            {isAdvancedMode ? 'Simple Editor' : 'Advanced YAML Editor'}
+            {isAdvancedMode ? 'Simple Editor' : 'Source Editor'}
           </Button>,
           <Button key="cancel" onClick={() => setIsModalVisible(false)}>
             Cancel
@@ -746,18 +857,18 @@ execution:
 
               <Divider>Template Content</Divider>
               <Typography.Paragraph type="secondary">
-                Use the Advanced YAML Editor to define the full template structure,
+                Use the Source Editor to define the full template structure,
                 including model configurations, audit checks, and execution settings.
               </Typography.Paragraph>
             </>
           ) : (
             <Form.Item
               name="content"
-              label="YAML Template Content"
-              rules={[{ required: true, message: 'Please enter YAML content' }]}
+              label="Template Source"
+              rules={[{ required: true, message: 'Please enter template source' }]}
             >
               <TextArea
-                placeholder="Paste or edit YAML template content here..."
+                placeholder="Paste or edit template source here..."
                 rows={20}
                 style={{ fontFamily: 'monospace' }}
               />
