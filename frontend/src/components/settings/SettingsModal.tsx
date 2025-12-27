@@ -165,11 +165,10 @@ const SettingsModal: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onNewSess
     <>
       <Modal
         open={isOpen}
-        style={{ maxHeight: 800, overflow: "auto" }}
         onCancel={handleClose}
         closable={true}
-        width={800}
-        height={800}
+        width={1000}
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflow: 'auto' } }}
         footer={[
           <Flex gap="large" justify="start" align="center">
             <Button
