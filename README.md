@@ -122,6 +122,98 @@ flowchart LR
 
 ---
 
+## 🔌 How FARA-GRC Plugs Into the Computer-Use AI Wave
+
+### The 2024-2025 Inflection Point
+
+We are living through a **Cambrian Explosion of Computer-Use AI**:
+
+| Date | Milestone | Significance |
+|------|-----------|--------------|
+| Oct 2024 | Claude Computer Use (Anthropic) | First mainstream API for vision-based desktop control |
+| Nov 2024 | OmniParser (Microsoft Research) | 39.6% GUI grounding accuracy—production-viable for enterprise UIs |
+| Dec 2024 | GPT-4V + Operator rumors | OpenAI enters the CUA space |
+| Jan 2025 | UI-TARS (ByteDance) | Reflection tuning enables self-correcting agents |
+| 2025+ | Enterprise adoption wave | CUAs move from demos to production |
+
+**Why now?** Three capabilities converged:
+1. **Vision-Language Models** can finally "see" UIs reliably.
+2. **Chain-of-Thought** reasoning creates auditable decision traces.
+3. **Multi-Agent Orchestration** (AutoGen, CrewAI) coordinates specialized workers.
+
+### Why GRC Is the Perfect First Market
+
+```mermaid
+flowchart TD
+    subgraph "Why CUAs Love GRC"
+        A[High Manual Effort] --> VALUE[High Automation Value]
+        B[Repetitive Workflows] --> VALUE
+        C[Structured UI Portals] --> VALUE
+        D[Strong Audit Requirements] --> VALUE
+    end
+
+    VALUE --> FARA[FARA-GRC]
+```
+
+| GRC Characteristic | Why CUAs Excel Here |
+|--------------------|---------------------|
+| **High manual effort** | Audits cost £20-50k in consultant time—automation ROI is immediate |
+| **Repetitive workflows** | Same 50 checks repeated across tenants—perfect for templates |
+| **Structured UIs** | M365 Admin Center is consistent Fluent UI—high accuracy (~90%) |
+| **Audit trail requirements** | Chain-of-Thought logs satisfy regulators naturally |
+| **Human-in-the-loop is expected** | Compliance already requires sign-offs—Approval Guard fits perfectly |
+
+### Why Should You Care?
+
+#### If You're an Enterprise
+
+| Pain Point | How FARA-GRC Solves It |
+|------------|------------------------|
+| Audit costs spiral every year | One-click templates replace weeks of consultant time |
+| Evidence is screenshots in Word | Forensic bundles with hashes, timestamps, replay |
+| Reports are stale on delivery | Continuous monitoring with real-time alerts |
+| Auditors audit their own work | AI agent provides independent verification |
+
+#### If You're a Consultant / MSP
+
+| Pain Point | How FARA-GRC Solves It |
+|------------|------------------------|
+| Can only serve one client at a time | Templates scale across unlimited tenants |
+| Expertise trapped in your head | Encode knowledge into sellable templates |
+| Race to the bottom on pricing | Differentiate with forensic-grade evidence |
+| Junior staff take months to train | AI reasoning traces accelerate onboarding |
+
+#### If You're a Regulator / Assessor
+
+| Pain Point | How FARA-GRC Solves It |
+|------------|------------------------|
+| Trust auditor word and screenshots | Replay packages with full decision trace |
+| No way to verify reasoning | Chain-of-Thought logs are inspectable |
+| Integrity disputes are common | Timestamped approvals prove compliance |
+
+### The Bigger Picture: AI-Native GRC
+
+```mermaid
+flowchart LR
+    subgraph "Old World"
+        A1[Manual Clicks] --> A2[Screenshots]
+        A2 --> A3[Word Doc]
+        A3 --> A4[Static PDF]
+    end
+
+    subgraph "New World with FARA-GRC"
+        B1[Template Execution] --> B2[Forensic Capture]
+        B2 --> B3[Consensus Verification]
+        B3 --> B4[Live Dashboard]
+    end
+
+    A4 -.->|Paradigm Shift| B1
+```
+
+**The bottom line:** Computer-Use AI is not a feature you bolt onto existing tools. FARA-GRC is built **AI-native from the ground up**, treating compliance as a continuous, automated, mathematically-grounded discipline rather than a periodic checkbox exercise.
+
+---
+
 ## 🧠 Mathematical Foundations: Science, Not Magic
 
 FARA-GRC is grounded in three core mathematical frameworks. We don't just "use AI"; we apply rigorous scientific principles to ensure trust and reliability.
