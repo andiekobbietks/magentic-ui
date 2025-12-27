@@ -48,6 +48,114 @@ Together, **FARA-GRC** = *"Forensic AI-Reasoned Automation for Governance, Risk 
 
 ---
 
+## 📜 What Is GRC? A Brief History
+
+### The Three Pillars
+
+**GRC** stands for **Governance, Risk & Compliance**. These three words represent a discipline that barely existed forty years ago but now employs millions of professionals worldwide and underpins trillions of dollars in enterprise software spending.
+
+| Pillar | Definition | Example |
+|--------|------------|---------|
+| **Governance** | The policies, procedures, and decision-making structures that guide an organization | "Who can approve a £50,000 purchase?" |
+| **Risk** | The identification, assessment, and mitigation of threats to the organization | "What happens if our data center floods?" |
+| **Compliance** | Adherence to external laws, regulations, and internal policies | "Are we following GDPR when we store customer data?" |
+
+### How GRC Came to Exist
+
+GRC did not emerge from a single event. It crystallized from a series of corporate disasters that forced regulators and boards to demand accountability:
+
+| Year | Event | Consequence |
+|------|-------|-------------|
+| **1992** | COSO Internal Control Framework | First standardized approach to enterprise risk management |
+| **2001** | Enron collapse | $74 billion in shareholder value destroyed; executives imprisoned |
+| **2002** | Sarbanes-Oxley Act (SOX) | US law requiring CEOs/CFOs to personally certify financial controls |
+| **2008** | Global Financial Crisis | Revealed systemic risk management failures across banking |
+| **2016** | GDPR enacted (effective 2018) | European data protection law with fines up to 4% of global revenue |
+| **2020s** | Cloud migration at scale | Governance complexity explodes as data moves to M365, Azure, AWS |
+
+Before Enron, "compliance" was a legal department concern. After Sarbanes-Oxley, it became a board-level agenda item. The acronym "GRC" was coined around 2002-2003 by industry analysts who noticed that governance, risk, and compliance—previously siloed functions—were converging into a single discipline.
+
+Today, GRC is a **$50+ billion market** (Gartner, 2024) encompassing software platforms, consulting services, audit firms, and certification bodies. Every Fortune 500 company has a Chief Compliance Officer. Every regulated industry (finance, healthcare, energy) has armies of GRC professionals. And yet, as I will argue, the tools they use have not fundamentally changed since the PowerPoint era.
+
+---
+
+## 🖥️ What Is M365 Auditing?
+
+### The Cloud That Ate the Enterprise
+
+**Microsoft 365** (M365) is the dominant productivity platform for enterprise organizations. As of 2024, Microsoft reports over **400 million paid commercial seats** and **85% penetration in Fortune 500 companies**. When an organization "moves to the cloud," they are almost certainly moving to M365.
+
+M365 is not one product. It is a constellation of services:
+
+| Service | Purpose | Security-Relevant Settings |
+|---------|---------|---------------------------|
+| **Azure Active Directory (Entra ID)** | Identity and access management | MFA policies, Conditional Access, privileged roles |
+| **Exchange Online** | Email and calendaring | Mail flow rules, anti-phishing, data retention |
+| **SharePoint Online** | Document storage and collaboration | Sharing policies, external access, DLP |
+| **Microsoft Teams** | Chat and video conferencing | Guest access, meeting policies, app permissions |
+| **Intune** | Device management | Compliance policies, encryption, app protection |
+| **Defender for Office 365** | Threat protection | Safe Links, Safe Attachments, anti-malware |
+| **Purview** | Data governance | Sensitivity labels, retention policies, eDiscovery |
+
+Each of these services has its own **Admin Center**—a web portal where administrators configure policies. A typical M365 tenant has **hundreds of configurable settings** spread across **dozens of admin portals**.
+
+### Why M365 Auditing Matters
+
+Every organization using M365 must answer questions like:
+
+- *"Is MFA enforced for all admin accounts?"*
+- *"Can external users access our SharePoint sites?"*
+- *"Are emails being retained for 7 years as required by regulation?"*
+- *"Who has Global Administrator privileges, and should they?"*
+
+These questions sound simple. Answering them is not.
+
+The settings are scattered across multiple portals. The terminology changes between services. The UI updates without warning. Microsoft documentation is vast but inconsistent. And the consequences of misconfiguration are severe: a single missing Conditional Access policy can expose an entire organization to credential theft.
+
+**M365 auditing** is the practice of systematically reviewing these settings to ensure they meet security and compliance requirements. It is performed by:
+
+- **Internal IT teams** (often under-resourced and conflicted)
+- **External auditors** (expensive and available only periodically)
+- **Managed Service Providers (MSPs)** (who audit dozens of tenants manually)
+
+### The Current State of M365 Auditing: A Manual Nightmare
+
+Here is how a typical M365 compliance audit works today:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  A DAY IN THE LIFE OF AN M365 AUDITOR (2024)                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  09:00  Log into client's M365 tenant with delegated admin credentials      │
+│  09:15  Open Azure AD Admin Center, navigate to Conditional Access          │
+│  09:20  Take screenshot of each policy (there are 47 of them)               │
+│  10:30  Open Exchange Admin Center, check mail flow rules                   │
+│  10:45  Screenshot each rule, paste into Word document                      │
+│  11:30  Open SharePoint Admin Center, review sharing settings               │
+│  11:45  Notice the UI has changed since last audit; spend 20 min finding    │
+│         the setting that moved to a different menu                          │
+│  12:00  Lunch (check email; client asks "is MFA enabled?" - answer: "I      │
+│         haven't gotten to that portal yet")                                 │
+│  13:00  Open Intune, review device compliance policies                      │
+│  14:00  Open Defender portal, check anti-phishing settings                  │
+│  15:00  Open Purview, review retention policies                             │
+│  16:00  Realize you forgot to screenshot the DLP policies; go back          │
+│  17:00  Compile all screenshots into 150-page Word document                 │
+│  17:30  Write narrative: "MFA is enabled for most users" (is it?)          │
+│  18:00  Send to client; invoice £25,000                                     │
+│                                                                              │
+│  REPEAT FOR NEXT CLIENT TOMORROW                                            │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+This is not a caricature. This is the industry standard. The largest consulting firms in the world—Deloitte, PwC, KPMG, EY—perform M365 audits this way. The screenshots-in-Word approach is how billions of dollars in audit fees are earned annually.
+
+FARA-GRC exists to end this absurdity.
+
+---
+
 ## 🤖 Computer-Use Agents: Where FARA-GRC Fits
 
 ### The Taxonomy of AI Agents
