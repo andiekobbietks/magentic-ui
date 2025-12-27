@@ -140,6 +140,126 @@ graph TD
     Orch -->|Final Report| User
 ```
 
+  ---
+
+  ## 🧑‍🤝‍🧑 Personas & Journeys (Story Bank)
+
+  Below are twelve concise personas with their top journeys rendered as Mermaid diagrams for quick stakeholder alignment.
+
+  ### 1) Audit Lead – "Evidence Hawk"
+  ```mermaid
+  flowchart TD
+    A[Start Tenant Audit] --> B[Run MFA Posture Template]
+    B --> C[Orchestrator drafts plan]
+    C --> D[Consensus Swarm executes]
+    D --> E[Approval Guard flags risky steps]
+    E -->|Approve| F[Evidence bundle generated]
+    F --> G[Share report with client]
+  ```
+
+  ### 2) Security Analyst – "Signal Hunter"
+  ```mermaid
+  flowchart LR
+    A[Enable monitoring] --> B[Define anomaly threshold]
+    B --> C[WebSurfer watches admin changes]
+    C --> D[Coder correlates logs]
+    D --> E{S/N > 100?}
+    E -->|Yes| F[Auto-notify Slack]
+    E -->|No| G[Escalate to human review]
+  ```
+
+  ### 3) Compliance Officer – "Policy Guardian"
+  ```mermaid
+  flowchart TD
+    A[Select ISO 27001 pack] --> B[Approval Guard reviews data writes]
+    B --> C[Run checklist in read-only]
+    C --> D{Nonconformance?}
+    D -->|Yes| E[Generate CAPA draft]
+    D -->|No| F[Certify control]
+  ```
+
+  ### 4) MSP Owner – "Marketplace Builder"
+  ```mermaid
+  flowchart LR
+    A[Author template] --> B[Test with sandbox tenant]
+    B --> C[Publish to marketplace]
+    C --> D[Customer installs]
+    D --> E[Revenue share payout]
+  ```
+
+  ### 5) Blue Team Lead – "Incident Sentinel"
+  ```mermaid
+  flowchart TD
+    A[Set "Tell me when" trigger] --> B[Watch for admin role changes]
+    B --> C{Role escalated?}
+    C -->|Yes| D[Freeze session + alert]
+    C -->|No| E[Continue monitoring]
+  ```
+
+  ### 6) Auditor-in-Training – "Apprentice"
+  ```mermaid
+  flowchart LR
+    A[Pick training scenario] --> B[Follow guided steps]
+    B --> C[See agent reasoning traces]
+    C --> D[Submit answers]
+    D --> E[Receive scored feedback]
+  ```
+
+  ### 7) Data Protection Officer – "GDPR Sentinel"
+  ```mermaid
+  flowchart TD
+    A[Run GDPR discovery template] --> B[FileSurfer scans DSR locations]
+    B --> C[Coder classifies PII]
+    C --> D{High-risk PII found?}
+    D -->|Yes| E[Generate deletion/retention tasks]
+    D -->|No| F[Log compliance proof]
+  ```
+
+  ### 8) CTO – "Risk Owner"
+  ```mermaid
+  flowchart LR
+    A[Review risk dashboard] --> B[Bayesian risk roll-up]
+    B --> C[What-if on change freeze]
+    C --> D{Risk > threshold?}
+    D -->|Yes| E[Schedule mitigation sprint]
+    D -->|No| F[Maintain posture]
+  ```
+
+  ### 9) Red Team Consultant – "Control Tester"
+  ```mermaid
+  flowchart TD
+    A[Load adversary simulation template] --> B[Simulate risky actions in sandbox]
+    B --> C[Approval Guard contains side effects]
+    C --> D[Report misconfig findings]
+  ```
+
+  ### 10) Governance Lead – "Board Narrator"
+  ```mermaid
+  flowchart LR
+    A[Request board deck] --> B[Summarize evidence trail]
+    B --> C[Attach consensus decisions]
+    C --> D[Export to PDF/Slides]
+  ```
+
+  ### 11) DevSecOps Engineer – "Pipeline Integrator"
+  ```mermaid
+  flowchart TD
+    A[Add CLI to CI pipeline] --> B[Preflight tenant checks]
+    B --> C{Failing controls?}
+    C -->|Yes| D[Block deploy]
+    C -->|No| E[Promote build]
+  ```
+
+  ### 12) Regulator/Assessor – "Independent Verifier"
+  ```mermaid
+  flowchart LR
+    A[Receive replay package] --> B[Inspect Chain-of-Thought logs]
+    B --> C[Verify timestamps + approvals]
+    C --> D{Integrity holds?}
+    D -->|Yes| E[Accept audit]
+    D -->|No| F[Request clarification]
+  ```
+
 ---
 
 ## 🚀 Quick Start
