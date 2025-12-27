@@ -3,10 +3,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "magentic_ui"
+name = "fara_grc"
 license = "MIT"
 dynamic = ["version"]
-description = "A research prototype of a human-centered interface powered by a multi-agent system"
+description = "FARA-GRC: Forensic AI-Reasoned Automation for Governance, Risk & Compliance"
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["agents", "browser-use", "multi-agent", "ai-assistant", "playwright", "web-automation"]

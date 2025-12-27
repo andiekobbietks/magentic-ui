@@ -1,8 +1,8 @@
 {
-  "name": "Magentic-UI",
+  "name": "fara-grc",
   "version": "1.0.0",
   "private": true,
-  "description": "Magentic-UI",
+  "description": "FARA-GRC: Forensic AI-Reasoned Automation for Governance, Risk & Compliance",
   "author": "Microsoft",
   "keywords": [
     "gatsby"
