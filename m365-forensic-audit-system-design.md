@@ -137,6 +137,7 @@
 
 | Paper | Finding | Relevance to FARA-GRC |
 |-------|---------|----------------------|
+| **Fourney et al. (2024)** - Magentic-One | Two-Ledger (Task/Progress) orchestration & Stall Counter 🟢 | Core state management & loop recovery |
 | **Lu et al. (2024)** - OmniParser | 39.6% GUI grounding accuracy (SOTA) 🟢 | Vision-based navigation works |
 | **Qiao et al. (2025)** - UI-TARS | Reflection tuning for error recovery 🟢 | Agents can self-correct mistakes |
 | **Wei et al. (2022)** - Chain-of-Thought | Reasoning traces are auditable 🟢 | Monologue creates evidence |
@@ -6003,6 +6004,33 @@ src/magentic_ui/agents/
 
 ---
 
+## Magentic-One Orchestration: The Two-Ledger System
+
+> **Research Foundation:** Based on Fourney et al. (2024), FARA-GRC implements a state-of-the-art orchestration logic that separates high-level strategy from low-level execution.
+
+### **1. The Task Ledger (Outer Loop Strategy)**
+The Task Ledger serves as the "Strategic Memory" of the audit. It is populated during the **Outer Loop** and contains:
+- **Given/Verified Facts**: Ground truth discovered during the audit (e.g., "MFA is disabled for Global Admins").
+- **Facts to Look Up**: Information the agents need to find (e.g., "Check Conditional Access policy 'CA001'").
+- **Educated Guesses**: LLM-generated hypotheses used to guide search and reduce sensitivity to hallucinations.
+- **Task Plan**: The high-level sequence of steps (e.g., "1. Audit MFA, 2. Audit CA, 3. Generate Report").
+
+### **2. The Progress Ledger (Inner Loop Execution)**
+The Progress Ledger manages the "Tactical Execution" of individual steps. During the **Inner Loop**, the Orchestrator answers five critical questions:
+1. **Is the task complete?** (Termination logic)
+2. **Is the team looping?** (Redundancy detection)
+3. **Is forward progress being made?** (Efficiency check)
+4. **Which agent should speak next?** (Routing)
+5. **What is the specific instruction for them?** (Delegation)
+
+### **3. The Stall Counter & Re-planning**
+To prevent infinite loops or "agentic drift," FARA-GRC implements a **Stall Counter**:
+- If the Inner Loop fails to make progress for **2 consecutive turns**, the counter increments.
+- Once the threshold is reached, the Orchestrator **breaks the Inner Loop** and returns to the **Outer Loop**.
+- It then performs a **Reflection Step**, updates the Task Ledger with new findings, and generates a **Revised Plan**.
+
+---
+
 ## LXD Forensic Trace Requirements Analysis
 
 > **Context:** This section defines what my M365 audit system actually needs. Research-validated enhancements are detailed in [Section: OmniParser Integration](#omniparser-integration-structured-gui-parsing-for-precise-m365-automation) and [Section: Advanced Model Alternatives](#advanced-model-alternatives-beyond-fara-7b).
@@ -6028,6 +6056,17 @@ For my "Golden Jackpot" M365 audit system, I need:
 - **Video recording**: VNC/MP4 output
 - **AI monologue logging**: Thought process capture
 - **Cryptographic signing**: Digital affidavits
+- **Failure Classification**: Automated root-cause analysis using Magentic-One error codes (e.g., `persistent-inefficient-actions`, `insufficient-verification-steps`).
+
+### **Forensic Failure Classification (Magentic-One Alignment)**
+When an audit fails or stalls, FARA-GRC uses the research-validated classification system to tag the trace:
+| Code | Definition | Forensic Impact |
+|------|------------|-----------------|
+| `persistent-inefficient-actions` | Looping on failed strategies | High cost, low value |
+| `insufficient-verification-steps` | Marking complete without proof | **CRITICAL**: Invalidates audit |
+| `inefficient-navigation-attempts` | Getting lost in M365 UI | Latency/Timeout risk |
+| `underutilized-resource-options` | Ignoring available data/tools | Suboptimal evidence |
+| `access-and-security-barriers` | Blocked by MFA/Permissions | Scope limitation |
 
 #### **4. Minimal Persistence (Keep ~5%)**
 - **Mission ID storage**: Basic run tracking

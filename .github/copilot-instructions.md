@@ -79,14 +79,12 @@ Built on AutoGen (Microsoft's multi-agent framework), it routes audit tasks to s
 ### Layer 3: Core Components (Detailed Breakdown)
 
 **Orchestrator** (`src/magentic_ui/teams/orchestrator/_orchestrator.py`)
-- **What it is**: The "PHP application logic" - makes decisions
+- **What it is**: The "PHP application logic" - makes decisions.
 - **What it does**:
-  - Reads user task
-  - Generates multi-step plan using LLM
-  - Routes each step to appropriate agent
-  - Monitors progress
-  - Decides if replanning needed
-  - Generates final answer
+  - **Outer Loop**: Generates a strategic plan and maintains the **Task Ledger** (Facts, Guesses, Plan).
+  - **Inner Loop**: Executes steps, monitors the **Progress Ledger**, and routes to agents.
+  - **Stall Counter**: Detects loops or lack of progress and triggers re-planning.
+  - **Final Answer**: Generates the final response based on the full audit trail.
 - **Key state machine**: Planning mode → Execution mode → Final answer mode
 
 **Agents** (The "worker processes")

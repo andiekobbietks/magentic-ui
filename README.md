@@ -79,6 +79,24 @@ Today, GRC is a **$50+ billion market** (Gartner, 2024) encompassing software pl
 
 ---
 
+## 🏗️ The Architecture: Built on Magentic-One
+
+FARA-GRC is built on the **Magentic-One** multi-agent orchestration framework (Microsoft Research, 2024). This architecture is designed for high-performing, generalist agentic systems that can solve complex, multi-step tasks.
+
+### **The Two-Ledger System**
+The "brain" of FARA-GRC is the **Orchestrator**, which manages the audit through two structured ledgers:
+*   **Task Ledger (Strategy)**: Maintains the high-level facts, missing information, and **Educated Guesses** (hypotheses) that guide the audit.
+*   **Progress Ledger (Execution)**: Tracks the real-time state of the team, detecting loops and ensuring forward progress.
+
+### **The Inner & Outer Loops**
+*   **Outer Loop**: The Orchestrator reflects on the overall goal, updates the Task Ledger, and generates a strategic plan.
+*   **Inner Loop**: The Orchestrator delegates specific steps to specialized agents (WebSurfer, Coder, FileSurfer) and monitors their output.
+
+### **Self-Correction: The Stall Counter**
+If the agents get stuck or enter an unproductive loop, the **Stall Counter** triggers an automatic break. The Orchestrator then returns to the Outer Loop to re-evaluate the strategy, update its "Educated Guesses," and generate a revised plan to overcome the obstacle.
+
+---
+
 ## 🖥️ What Is M365 Auditing?
 
 ### The Cloud That Ate the Enterprise
