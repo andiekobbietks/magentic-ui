@@ -1,0 +1,148 @@
+# Microsoft Teams Security Audit Template
+# Audit of Teams security, guest access, and meeting policies
+
+name: "Microsoft Teams Security Audit"
+description: "Comprehensive audit of Microsoft Teams security settings including guest access, meeting policies, and app permissions"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["teams", "collaboration", "guest-access", "meetings", "m365"]
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"
+  portals:
+    - "Teams Admin Center"
+    - "Microsoft 365 Admin Center"
+    - "Azure AD Admin Center"
+  
+  checks:
+    - name: "Guest Access Policy"
+      type: "guest_access"
+      portal: "Teams Admin Center"
+      path: "/org-wide-settings/guest-access"
+      criteria:
+        guest_access_enabled: true  # May be required, but controlled
+        guest_calling: false  # Typically restricted
+        guest_meeting_scheduling: false
+      expected: true
+      severity: "high"
+      description: "Guest access should be enabled but with appropriate restrictions"
+
+    - name: "External Access (Federation)"
+      type: "external_access"
+      portal: "Teams Admin Center"
+      path: "/org-wide-settings/external-access"
+      criteria:
+        external_access: "allowed_domains_only"  # Not open to all
+      expected: true
+      severity: "high"
+      description: "External federation should be restricted to specific domains"
+
+    - name: "Meeting Lobby Settings"
+      type: "meeting_policy"
+      portal: "Teams Admin Center"
+      path: "/meetings/meeting-policies"
+      criteria:
+        auto_admit: "people_in_org"  # Not everyone
+        anonymous_users_in_lobby: true
+      expected: true
+      severity: "medium"
+      description: "Anonymous and external users should wait in lobby"
+
+    - name: "Meeting Recording Policy"
+      type: "meeting_policy"
+      portal: "Teams Admin Center"
+      path: "/meetings/meeting-policies"
+      criteria:
+        cloud_recording: "org_only"
+        recording_consent: true
+      expected: true
+      severity: "medium"
+      description: "Meeting recording should be controlled and consent-based"
+
+    - name: "Screen Sharing Policy"
+      type: "meeting_policy"
+      portal: "Teams Admin Center"
+      path: "/meetings/meeting-policies"
+      criteria:
+        screen_sharing_mode: "single_app"  # Or "entire_screen" with justification
+      expected: true
+      severity: "low"
+      description: "Screen sharing mode should balance usability and security"
+
+    - name: "Third-Party App Permissions"
+      type: "app_policy"
+      portal: "Teams Admin Center"
+      path: "/teams-apps/permission-policies"
+      criteria:
+        third_party_apps: "allow_specific"  # Not all apps
+        custom_apps: "allow_specific"
+      expected: true
+      severity: "high"
+      description: "Third-party and custom apps should be explicitly approved"
+
+    - name: "App Setup Policy"
+      type: "app_policy"
+      portal: "Teams Admin Center"
+      path: "/teams-apps/setup-policies"
+      criteria:
+        user_pinning: true
+        org_apps_pinned: true
+      expected: true
+      severity: "low"
+      description: "App setup policies should guide users to approved apps"
+
+    - name: "Private Channel Creation"
+      type: "teams_policy"
+      portal: "Teams Admin Center"
+      path: "/teams/teams-policies"
+      criteria:
+        private_channel_creation: "team_owners_only"
+      expected: true
+      severity: "medium"
+      description: "Private channel creation should be controlled"
+
+    - name: "Team Creation Policy"
+      type: "teams_policy"
+      portal: "Teams Admin Center"
+      path: "/teams/teams-policies"
+      criteria:
+        team_creation: "specific_groups"  # Not all users
+      expected: true
+      severity: "medium"
+      description: "Team creation should be governed to prevent sprawl"
+
+    - name: "Information Barriers"
+      type: "compliance_policy"
+      portal: "Microsoft Purview"
+      path: "/information-barriers"
+      criteria:
+        barriers_configured: true  # If required by regulation
+      expected: true
+      severity: "high"
+      description: "Information barriers should be configured if required (e.g., financial services)"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"
+  max_iterations: 65
+  timeout_minutes: 40
+  output_format: "forensic_bundle"
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  policy_export: true
+
+# Reporting
+reporting:
+  format: "executive_summary"
+  include_recommendations: true
+  compliance_mapping:
+    - "CIS M365 Benchmark"
+    - "FINRA Rule 3110"
+    - "SEC Rule 17a-4"
+  risk_scoring: "bayesian"

@@ -1,0 +1,141 @@
+# Data Loss Prevention (DLP) Audit Template
+# Audit of Microsoft 365 DLP policies and sensitive information protection
+
+name: "Data Loss Prevention Audit"
+description: "Comprehensive audit of DLP policies across Exchange, SharePoint, Teams, and OneDrive for sensitive data protection"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["dlp", "data-protection", "compliance", "m365", "sensitive-data"]
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"
+  portals:
+    - "Microsoft Purview Compliance Portal"
+    - "Microsoft 365 Admin Center"
+    - "Exchange Admin Center"
+  
+  checks:
+    - name: "DLP Policies Exist"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        policies_configured: true
+        min_policies: 1
+      expected: true
+      severity: "critical"
+      description: "At least one DLP policy should be configured"
+
+    - name: "Credit Card Detection Enabled"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        sensitive_info_type: "Credit Card Number"
+        policy_mode: "enforce"  # Not just test mode
+      expected: true
+      severity: "high"
+      description: "DLP should detect and protect credit card numbers"
+
+    - name: "SSN/National ID Protection"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        sensitive_info_type: "SSN"
+        policy_mode: "enforce"
+      expected: true
+      severity: "high"
+      description: "DLP should detect and protect Social Security Numbers"
+
+    - name: "Email DLP Coverage"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        locations: "Exchange"
+        policy_enabled: true
+      expected: true
+      severity: "high"
+      description: "DLP policies should cover Exchange email"
+
+    - name: "SharePoint DLP Coverage"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        locations: "SharePoint"
+        policy_enabled: true
+      expected: true
+      severity: "high"
+      description: "DLP policies should cover SharePoint sites"
+
+    - name: "Teams DLP Coverage"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        locations: "Teams"
+        policy_enabled: true
+      expected: true
+      severity: "high"
+      description: "DLP policies should cover Teams chats and channels"
+
+    - name: "OneDrive DLP Coverage"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        locations: "OneDrive"
+        policy_enabled: true
+      expected: true
+      severity: "medium"
+      description: "DLP policies should cover OneDrive for Business"
+
+    - name: "DLP Policy Tips Enabled"
+      type: "dlp_policy"
+      portal: "Purview"
+      path: "/data-loss-prevention/policies"
+      criteria:
+        policy_tips: true
+      expected: true
+      severity: "medium"
+      description: "Policy tips should educate users about sensitive content"
+
+    - name: "DLP Incident Reports"
+      type: "dlp_alerts"
+      portal: "Purview"
+      path: "/data-loss-prevention/alerts"
+      criteria:
+        alerts_configured: true
+        notification_recipients: "compliance_team"
+      expected: true
+      severity: "high"
+      description: "DLP incidents should be reported to compliance team"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"
+  max_iterations: 80
+  timeout_minutes: 50
+  output_format: "forensic_bundle"
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  policy_export: true
+
+# Reporting
+reporting:
+  format: "detailed_technical"
+  include_recommendations: true
+  compliance_mapping:
+    - "GDPR Article 32"
+    - "HIPAA 164.312"
+    - "PCI DSS 3.4"
+    - "SOC 2 CC6.7"
+  risk_scoring: "bayesian"

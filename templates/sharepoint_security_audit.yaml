@@ -1,0 +1,147 @@
+# SharePoint Online Security Audit Template
+# Audit of SharePoint and OneDrive sharing, permissions, and security settings
+
+name: "SharePoint Security Audit"
+description: "Comprehensive audit of SharePoint Online and OneDrive sharing policies, external access, and site security"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["sharepoint", "onedrive", "sharing", "external-access", "m365"]
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"
+  portals:
+    - "SharePoint Admin Center"
+    - "Microsoft 365 Admin Center"
+    - "OneDrive Admin Center"
+  
+  checks:
+    - name: "External Sharing Level"
+      type: "sharing_policy"
+      portal: "SharePoint Admin Center"
+      path: "/policies/sharing"
+      criteria:
+        external_sharing: ["existing_guests", "new_and_existing_guests"]  # Not "anyone"
+      expected: true
+      severity: "critical"
+      description: "External sharing should require authentication, not anonymous links"
+
+    - name: "Guest Link Expiration"
+      type: "sharing_policy"
+      portal: "SharePoint Admin Center"
+      path: "/policies/sharing"
+      criteria:
+        guest_link_expiration: true
+        max_days: 30
+      expected: true
+      severity: "high"
+      description: "Guest sharing links should expire within 30 days"
+
+    - name: "Anyone Links Disabled"
+      type: "sharing_policy"
+      portal: "SharePoint Admin Center"
+      path: "/policies/sharing"
+      criteria:
+        anyone_links: false
+      expected: true
+      severity: "critical"
+      description: "Anonymous 'Anyone' links should be disabled"
+
+    - name: "File Request Links Restricted"
+      type: "sharing_policy"
+      portal: "SharePoint Admin Center"
+      path: "/policies/sharing"
+      criteria:
+        file_requests: "internal_only"
+      expected: true
+      severity: "medium"
+      description: "File request links should be restricted or monitored"
+
+    - name: "Site Classification Enabled"
+      type: "site_settings"
+      portal: "SharePoint Admin Center"
+      path: "/settings/site-classification"
+      criteria:
+        classification_enabled: true
+        classifications: ["Public", "Internal", "Confidential", "Highly Confidential"]
+      expected: true
+      severity: "medium"
+      description: "Site classification/sensitivity labels should be enabled"
+
+    - name: "Sync Client Restrictions"
+      type: "sync_settings"
+      portal: "SharePoint Admin Center"
+      path: "/settings/sync"
+      criteria:
+        sync_restricted_to_domain: true
+        block_mac_sync: false  # Based on org needs
+      expected: true
+      severity: "medium"
+      description: "OneDrive sync should be restricted to domain-joined or compliant devices"
+
+    - name: "Access Control for Unmanaged Devices"
+      type: "access_control"
+      portal: "SharePoint Admin Center"
+      path: "/policies/access-control"
+      criteria:
+        unmanaged_device_access: ["limited", "blocked"]
+      expected: true
+      severity: "high"
+      description: "Unmanaged devices should have limited or no access"
+
+    - name: "Idle Session Timeout"
+      type: "access_control"
+      portal: "SharePoint Admin Center"
+      path: "/policies/access-control"
+      criteria:
+        idle_session_timeout: true
+        timeout_minutes: 60
+      expected: true
+      severity: "medium"
+      description: "Idle browser sessions should timeout for security"
+
+    - name: "Legacy Authentication Blocked"
+      type: "access_control"
+      portal: "SharePoint Admin Center"
+      path: "/policies/access-control"
+      criteria:
+        legacy_auth_blocked: true
+      expected: true
+      severity: "high"
+      description: "Legacy authentication protocols should be blocked"
+
+    - name: "Sensitive Sites Reviewed"
+      type: "site_audit"
+      portal: "SharePoint Admin Center"
+      path: "/sites/active"
+      criteria:
+        high_sensitivity_sites_documented: true
+        permissions_reviewed: true
+      expected: true
+      severity: "high"
+      description: "Sites with sensitive data should have documented ownership and permissions"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"
+  max_iterations: 70
+  timeout_minutes: 45
+  output_format: "forensic_bundle"
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  site_inventory_export: true
+
+# Reporting
+reporting:
+  format: "detailed_technical"
+  include_recommendations: true
+  compliance_mapping:
+    - "CIS M365 Benchmark"
+    - "NIST 800-53 AC-3"
+    - "ISO 27001 A.9.4"
+  risk_scoring: "bayesian"

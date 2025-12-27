@@ -1,0 +1,114 @@
+# Privileged Identity Management (PIM) Audit Template
+# Audit of Azure AD PIM settings and privileged role assignments
+
+name: "Privileged Identity Management Audit"
+description: "Comprehensive audit of PIM configurations, eligible vs active assignments, and just-in-time access controls"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["pim", "privileged-access", "azure-ad", "jit", "least-privilege"]
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"
+  portals:
+    - "Entra ID Admin Center"
+    - "Azure Portal (PIM blade)"
+  
+  checks:
+    - name: "Global Admin Eligible vs Active"
+      type: "pim_role_assignment"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/azure-ad-roles"
+      criteria:
+        role: "Global Administrator"
+        assignment_type: "eligible"  # Should be eligible, not permanently active
+      expected: true
+      severity: "critical"
+      description: "Global Admin should use eligible (JIT) assignments, not permanent"
+
+    - name: "PIM Activation Requires MFA"
+      type: "pim_settings"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/settings"
+      criteria:
+        activation_requirements: "require_mfa"
+      expected: true
+      severity: "critical"
+      description: "Role activation must require multi-factor authentication"
+
+    - name: "PIM Activation Requires Justification"
+      type: "pim_settings"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/settings"
+      criteria:
+        activation_requirements: "require_justification"
+      expected: true
+      severity: "high"
+      description: "Role activation should require business justification"
+
+    - name: "Maximum Activation Duration"
+      type: "pim_settings"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/settings"
+      criteria:
+        max_activation_hours: 8  # Maximum 8 hours
+      expected: true
+      severity: "medium"
+      description: "Privileged role activation should have reasonable time limits"
+
+    - name: "PIM Alerts Configured"
+      type: "pim_alerts"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/alerts"
+      criteria:
+        alerts_enabled: true
+        notification_recipients: "security_team"
+      expected: true
+      severity: "high"
+      description: "PIM alerts should notify security team of suspicious activations"
+
+    - name: "Access Reviews Enabled"
+      type: "access_reviews"
+      portal: "Entra ID"
+      path: "/identity-governance/access-reviews"
+      criteria:
+        privileged_roles_reviewed: true
+        review_frequency: "quarterly"
+      expected: true
+      severity: "high"
+      description: "Privileged role assignments should undergo regular access reviews"
+
+    - name: "Stale Privileged Assignments"
+      type: "pim_role_assignment"
+      portal: "Entra ID"
+      path: "/privileged-identity-management/azure-ad-roles"
+      criteria:
+        last_activation: "within_90_days"
+      expected: true
+      severity: "medium"
+      description: "Identify privileged assignments that haven't been used recently"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"
+  max_iterations: 60
+  timeout_minutes: 40
+  output_format: "forensic_bundle"
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  role_assignment_export: true
+
+# Reporting
+reporting:
+  format: "executive_summary"
+  include_recommendations: true
+  compliance_mapping:
+    - "NIST 800-53 AC-6"
+    - "CIS Controls 5.4"
+    - "SOC 2 CC6.1"
+  risk_scoring: "bayesian"

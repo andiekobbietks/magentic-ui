@@ -1,0 +1,140 @@
+# Exchange Online Mailbox Security Audit Template
+# Audit of email security, forwarding rules, and mailbox permissions
+
+name: "Mailbox Security Audit"
+description: "Audit of Exchange Online mailbox security including forwarding rules, delegate permissions, and suspicious configurations"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["exchange", "email", "mailbox-security", "forwarding", "m365"]
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"
+  portals:
+    - "Exchange Admin Center"
+    - "Microsoft 365 Admin Center"
+    - "Microsoft 365 Defender"
+  
+  checks:
+    - name: "External Forwarding Blocked"
+      type: "transport_rule"
+      portal: "Exchange Admin Center"
+      path: "/mail-flow/rules"
+      criteria:
+        external_forwarding: "blocked"
+      expected: true
+      severity: "critical"
+      description: "Automatic forwarding to external domains should be blocked tenant-wide"
+
+    - name: "No Suspicious Inbox Rules"
+      type: "mailbox_rule"
+      portal: "Exchange Admin Center"
+      path: "/recipients/mailboxes"
+      criteria:
+        forward_to_external: false
+        delete_and_forward: false
+      expected: true
+      severity: "critical"
+      description: "Check for inbox rules that forward or delete emails (common in BEC)"
+
+    - name: "Audit Logging Enabled"
+      type: "mailbox_audit"
+      portal: "Exchange Admin Center"
+      path: "/compliance/audit"
+      criteria:
+        audit_enabled: true
+        actions_logged: ["Send", "SendAs", "SendOnBehalf", "HardDelete"]
+      expected: true
+      severity: "high"
+      description: "Mailbox audit logging should be enabled for all mailboxes"
+
+    - name: "Delegate Permissions Reviewed"
+      type: "mailbox_permissions"
+      portal: "Exchange Admin Center"
+      path: "/recipients/mailboxes"
+      criteria:
+        full_access_users: "documented"
+        send_as_users: "documented"
+      expected: true
+      severity: "high"
+      description: "Delegate permissions should be documented and reviewed"
+
+    - name: "DKIM Enabled"
+      type: "email_authentication"
+      portal: "Microsoft 365 Defender"
+      path: "/email-authentication/dkim"
+      criteria:
+        dkim_enabled: true
+        dkim_signing: true
+      expected: true
+      severity: "high"
+      description: "DKIM should be enabled for email authentication"
+
+    - name: "DMARC Policy Published"
+      type: "email_authentication"
+      portal: "Microsoft 365 Defender"
+      path: "/email-authentication/dmarc"
+      criteria:
+        dmarc_record: true
+        policy: ["quarantine", "reject"]  # Not just "none"
+      expected: true
+      severity: "high"
+      description: "DMARC policy should be set to quarantine or reject"
+
+    - name: "SPF Record Valid"
+      type: "email_authentication"
+      portal: "Microsoft 365 Defender"
+      path: "/email-authentication/spf"
+      criteria:
+        spf_record: true
+        spf_valid: true
+      expected: true
+      severity: "high"
+      description: "SPF record should be correctly configured"
+
+    - name: "Safe Attachments Enabled"
+      type: "defender_policy"
+      portal: "Microsoft 365 Defender"
+      path: "/policies/safe-attachments"
+      criteria:
+        safe_attachments_enabled: true
+        action: "dynamic_delivery"
+      expected: true
+      severity: "high"
+      description: "Defender Safe Attachments should be enabled"
+
+    - name: "Safe Links Enabled"
+      type: "defender_policy"
+      portal: "Microsoft 365 Defender"
+      path: "/policies/safe-links"
+      criteria:
+        safe_links_enabled: true
+        scan_urls: true
+      expected: true
+      severity: "high"
+      description: "Defender Safe Links should scan URLs in emails"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"
+  max_iterations: 70
+  timeout_minutes: 45
+  output_format: "forensic_bundle"
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  rule_export: true  # Export mailbox rules for review
+
+# Reporting
+reporting:
+  format: "executive_summary"
+  include_recommendations: true
+  compliance_mapping:
+    - "CIS M365 Benchmark"
+    - "NIST 800-53 SC-7"
+    - "SOC 2 CC6.6"
+  risk_scoring: "bayesian"
