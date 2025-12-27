@@ -42,7 +42,7 @@ FARA-GRC is grounded in three core mathematical frameworks. We don't just "use A
 
 **The Application:** We treat the audit process as a signal processing problem. The goal of FARA-GRC is to maximize the **Signal-to-Noise Ratio (S/N)** of the final report.
 
-190766 S/N = 10 \log_{10} \left( \frac{P_{signal}}{P_{noise}} \right) 190766
+$$ S/N = 10 \log_{10}\left(\frac{P_{signal}}{P_{noise}}\right) $$
 
 *   **How we apply it:** Our agents are tuned to filter out "static" (irrelevant configurations) and amplify "signals" (critical non-compliance).
 *   **Target:** S/N > 100 (The report should contain 100x more actionable intelligence than irrelevant fluff).
@@ -54,11 +54,11 @@ FARA-GRC is grounded in three core mathematical frameworks. We don't just "use A
 
 **The Application:** Every action proposed by an agent is evaluated using a probabilistic risk function.
 
-190766 Risk(a) = \sum_{s} P(s|e) \times Cost(a,s) 190766
+$$ Risk(a) = \sum_{s} P(s \mid e) \times Cost(a, s) $$
 
 *   **How we apply it:** The **Approval Guard** calculates the expected cost of an action.
-    *   **Low Risk:** Navigation (clicking "Next") → (failure) \approx 0$ → **Auto-Approved**.
-    *   **High Risk:** Modification (deleting a policy) → (failure) = \infty$ → **Human Approval Required**.
+  *   **Low Risk:** Navigation (clicking "Next") → $P(\text{failure}) \approx 0$ → **Auto-Approved**.
+  *   **High Risk:** Modification (deleting a policy) → $Cost(\text{failure}) = \infty$ → **Human Approval Required**.
 
 ### 3. Consensus Swarm (Byzantine Fault Tolerance)
 **Origin:** Leslie Lamport, *The Byzantine Generals Problem* (1982).
@@ -67,7 +67,7 @@ FARA-GRC is grounded in three core mathematical frameworks. We don't just "use A
 
 **The Application:** We use a multi-agent "swarm" where different agents (WebSurfer, Coder, FileSurfer) must agree on a finding.
 
-190766 Consensus = \frac{n-1}{3} \text{ fault tolerance} 190766
+$$ Consensus = \frac{n-1}{3} \text{ fault tolerance} $$
 
 *   **How we apply it:** If the WebSurfer sees "MFA Disabled" but the Coder's API check says "MFA Enabled", the system halts. It requires **consensus** before flagging a finding, ensuring forensic integrity.
 
@@ -126,10 +126,12 @@ graph TD
         Orch -->|Plan Step| File[FileSurfer Agent]
     end
     
-    Web & Code & File -->|Proposed Action| Guard{Approval Guard}
-    
-    Guard -->|High Risk (Bayesian Check)| Human[Human Approval]
-    Guard -->|Low Risk (Bayesian Check)| Execute[Execute Action]
+    Web -->|Proposed Action| Guard{Approval Guard}
+    Code -->|Proposed Action| Guard
+    File -->|Proposed Action| Guard
+
+    Guard -->|High Risk| Human[Human Approval]
+    Guard -->|Low Risk| Execute[Execute Action]
     
     Human -->|Approve| Execute
     Human -->|Reject| Orch
