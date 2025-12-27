@@ -40,6 +40,7 @@ import {
   ReloadOutlined
 } from "@ant-design/icons";
 import { useSettingsStore } from "../../../store";
+import { useConfigStore } from "../../../../hooks/store";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -57,10 +58,13 @@ interface Template {
 interface TemplatesTabProps {
   config: any;
   handleUpdateConfig: (newConfig: any) => void;
+  onNewSession?: () => void;
+  onClose?: () => void;
 }
 
-const TemplatesTab: React.FC<TemplatesTabProps> = ({ config, handleUpdateConfig }) => {
+const TemplatesTab: React.FC<TemplatesTabProps> = ({ config, handleUpdateConfig, onNewSession, onClose }) => {
   const { token } = theme.useToken();
+  const { setPendingTemplate } = useConfigStore();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
@@ -548,6 +552,13 @@ execution:
     setIsAdvancedMode(!isAdvancedMode);
   };
 
+  const handleRunTemplate = (template: Template) => {
+    setPendingTemplate(template.content);
+    message.success(`Loaded template: ${template.name}`);
+    if (onClose) onClose();
+    if (onNewSession) onNewSession();
+  };
+
   const filteredTemplates = templates.filter(t => 
     t.name.toLowerCase().includes(searchText.toLowerCase()) || 
     t.description.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -659,8 +670,8 @@ execution:
             <Card
               hoverable
               actions={[
-                <Tooltip title="Run this audit (Demo)">
-                  <Button type="text" icon={<PlayCircleOutlined />} onClick={() => message.info(`Starting audit: ${template.name}`)}>Run</Button>
+                <Tooltip title="Run this audit">
+                  <Button type="text" icon={<PlayCircleOutlined />} onClick={() => handleRunTemplate(template)}>Run</Button>
                 </Tooltip>,
                 <Tooltip title="Edit Template">
                   <Button type="text" icon={<EditOutlined />} onClick={() => handleEditTemplate(template)}>Edit</Button>

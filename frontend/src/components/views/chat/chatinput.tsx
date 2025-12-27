@@ -33,6 +33,7 @@ import PlanView from "./plan";
 import { McpServerSelector } from "../../features/McpServerSelector/McpServerSelector";
 import { MCPAgentConfig, MCPServerInfo } from "../../features/McpServersConfig/types";
 import { extractMcpServers } from "../../features/McpServersConfig/McpServersList";
+import { useConfigStore } from "../../../hooks/store";
 // Threshold for large text files (in characters)
 const LARGE_TEXT_THRESHOLD = 1500;
 
@@ -105,6 +106,15 @@ const ChatInput = React.forwardRef<{ focus: () => void }, ChatInputProps>(
       runStatus === "pausing" ||
       inputRequest?.input_type === "approval";
     const [mcpServers, setMcpServers] = React.useState<MCPServerInfo[]>([]);
+    const { pendingTemplate, setPendingTemplate } = useConfigStore();
+
+    React.useEffect(() => {
+      if (pendingTemplate) {
+        setText(pendingTemplate);
+        setPendingTemplate(null);
+      }
+    }, [pendingTemplate, setPendingTemplate]);
+
     // Handle textarea auto-resize
     React.useEffect(() => {
       if (textAreaRef.current) {

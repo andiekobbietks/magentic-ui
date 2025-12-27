@@ -116,6 +116,7 @@ const ContentHeader = ({
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        onNewSession={onNewSession}
       />
     </div>
   );

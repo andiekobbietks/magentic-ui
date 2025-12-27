@@ -55,6 +55,10 @@ export interface IConfigState {
   // Agent flow settings agentFlow: IAgentFlowSettings;
   agentFlow: IAgentFlowSettings;
   setAgentFlowSettings: (settings: Partial<IAgentFlowSettings>) => void;
+
+  // Template state
+  pendingTemplate: string | null;
+  setPendingTemplate: (template: string | null) => void;
 }
 
 // Default settings
@@ -100,6 +104,10 @@ export const useConfigStore = create<IConfigState>()(
         set((state) => ({
           agentFlow: { ...state.agentFlow, ...newSettings },
         })),
+
+      // Template state
+      pendingTemplate: null,
+      setPendingTemplate: (template) => set({ pendingTemplate: template }),
 
       // Sidebar state and actions
       sidebar: {

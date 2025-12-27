@@ -22,9 +22,10 @@ import { validateAll } from "./validation";
 interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewSession?: () => void;
 }
 
-const SettingsModal: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
+const SettingsModal: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onNewSession }) => {
   const { darkMode, setDarkMode, user } = React.useContext(appContext);
   const [isEmailModalOpen, setIsEmailModalOpen] = React.useState(false);
   const [hasChanges, setHasChanges] = React.useState(false);
