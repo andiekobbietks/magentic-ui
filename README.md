@@ -865,6 +865,33 @@ FARA-GRC's user interface is not a generic web application—it's a purpose-buil
 #### 1. **ChatView** (`frontend/src/components/views/chat/chat.tsx`)
 **Purpose**: Main orchestration interface for compliance audit sessions  
 **Technical Implementation**: React class component with WebSocket integration
+
+**Visual Layout**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  FARA-GRC Compliance Audit Session                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  [Audit Plan]  Review MFA Configuration                         │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ Step 1: Navigate to Security Center          [✓]       │    │
+│  │ Step 2: Check Conditional Access Policies    [▶]       │    │
+│  │ Step 3: Capture Evidence Screenshots         [ ]       │    │
+│  └────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  [Messages]                                                      │
+│  🤖 Orchestrator: Navigating to https://security.microsoft...   │
+│  📸 Evidence: [Screenshot with timestamp: 2025-12-27 08:15:23]  │
+│  ✅ Approval Request: Modify MFA policy? [Approve] [Deny]       │
+│                                                                  │
+│  [Progress] ████████████░░░░░░░░ 65% (Step 2 of 3)              │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ Type your message or select template...          [▶️]  │    │
+│  └────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**: 
 - **State Management**: Uses React hooks for session state, message history, and real-time updates
 - **WebSocket Connection**: Maintains persistent connection to backend for live audit streaming
@@ -889,6 +916,40 @@ interface ChatViewProps {
 #### 2. **Plan Component** (`frontend/src/components/views/chat/plan.tsx`)
 **Purpose**: Interactive audit plan builder and executor
 **Technical Implementation**: React functional component with drag-and-drop using `@hello-pangea/dnd`
+
+**Visual Layout**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  📋 Audit Plan: M365 MFA Compliance Check                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  [Drag to reorder steps]                                         │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────┐       │
+│  │ 🌐 Step 1: Navigate to Security Center               │       │
+│  │    Agent: FaraWebSurfer                               │       │
+│  │    Status: ✅ Completed (2min 34s)                    │       │
+│  │    [View Evidence] [Retry]                            │       │
+│  └──────────────────────────────────────────────────────┘       │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────┐       │
+│  │ ▶️ Step 2: Extract Conditional Access Policies        │       │
+│  │    Agent: Coder                                        │       │
+│  │    Status: 🔄 In Progress... (45%)                     │       │
+│  │    Details: Parsing JSON response from Graph API...   │       │
+│  └──────────────────────────────────────────────────────┘       │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────┐       │
+│  │ ⏸️ Step 3: Generate Compliance Report                 │       │
+│  │    Agent: FileSurfer                                   │       │
+│  │    Status: ⏳ Waiting (Depends on Step 2)             │       │
+│  │    [Edit] [Delete] [Duplicate]                         │       │
+│  └──────────────────────────────────────────────────────┘       │
+│                                                                  │
+│  [+ Add Step] [Save Plan] [Regenerate Plan]                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Drag-and-Drop UX**: Visual feedback during plan reordering with drop zones and ghost images
 - **Auto-save**: Debounced persistence prevents data loss during plan editing
@@ -911,6 +972,26 @@ const [validationErrors, setValidationErrors] = useState<string[]>([]);
 #### 3. **ApprovalButtons** (`frontend/src/components/views/chat/approval_buttons.tsx`)
 **Purpose**: Human oversight controls for sensitive audit operations
 **Technical Implementation**: React functional component with conditional rendering
+
+**Visual Layout**:
+```
+┌──────────────────────────────────────────────────────────┐
+│  ⚠️ Approval Required                                    │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  The AI agent wants to modify the Conditional Access    │
+│  policy "Require MFA for All Users".                    │
+│                                                          │
+│  Risk Level: 🔴 HIGH                                     │
+│  Action: Enable MFA requirement for external users       │
+│  Reversible: Yes (can be undone via Azure Portal)       │
+│                                                          │
+│  [✓ Approve]  [✗ Reject]  [📝 Modify Request]           │
+│                                                          │
+│  Policy: auto-conservative | Logged to audit trail      │
+└──────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Conditional Rendering**: Only displays when `status === "awaiting_input"` to reduce visual clutter
 - **Loading States**: Shows spinner during approval API calls to prevent double-clicks
@@ -932,6 +1013,37 @@ const [approveState, setApproveState] = useState<ButtonState>("idle");
 #### 4. **DetailViewer Ecosystem** (`frontend/src/components/views/chat/DetailViewer/`)
 **Purpose**: Forensic evidence display and verification interface
 **Technical Implementation**: React portal-based modals for overlay rendering
+
+**Visual Layout**:
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  🔍 Evidence Viewer - M365 Security Center                      [✕]    │
+├────────────────────────────────────────────────────────────────────┤
+│  [◀ Prev] [▶ Next] [⊕ Zoom In] [⊖ Zoom Out] [🔄 Fullscreen]          │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│         ╔═══════════════════════════════════════════════╗            │
+│         ║  [Screenshot of M365 Admin Portal]            ║            │
+│         ║                                               ║            │
+│         ║  🔒 Security & Compliance                     ║            │
+│         ║  ├─ Conditional Access                        ║            │
+│         ║  ├─ Identity Protection        ← Highlighted  ║            │
+│         ║  └─ Privileged Identity Mgmt                 ║            │
+│         ║                                               ║            │
+│         ╚═══════════════════════════════════════════════╝            │
+│                                                                        │
+│  📋 Evidence Metadata                                                  │
+│  ├─ Timestamp: 2025-12-27 08:15:23.456 UTC                           │
+│  ├─ URL: https://security.microsoft.com/conditionalaccess            │
+│  ├─ Hash (SHA-256): a3f9c2...8d4e                                     │
+│  ├─ Viewport: 1440x900                                                │
+│  ├─ User: auditor@example.com                                         │
+│  └─ Session ID: audit-2025-12-27-001                                  │
+│                                                                        │
+│  [📥 Download] [📋 Copy Hash] [🔗 Share Link] [⚖️ Verify Integrity]  │
+└────────────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Portal Rendering**: Renders outside main DOM tree to avoid z-index conflicts
 - **Fullscreen Mode**: F11-like experience for detailed evidence inspection
@@ -954,6 +1066,34 @@ novncConnection.scaleViewport = true;  // Responsive scaling
 #### 5. **RenderMessage** (`frontend/src/components/views/chat/rendermessage.tsx`)
 **Purpose**: Multi-modal message rendering with evidence integration
 **Technical Implementation**: React memo component with content type detection
+
+**Visual Layout**:
+```
+┌──────────────────────────────────────────────────────────────┐
+│  🤖 Orchestrator • 08:15:23                                   │
+│  ──────────────────────────────────────────────────────────  │
+│                                                               │
+│  Successfully navigated to M365 Security Center and           │
+│  extracted Conditional Access policies.                       │
+│                                                               │
+│  📸 Evidence captured:                                        │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐        │
+│  │ [Screenshot] │ │ [Screenshot] │ │ [Screenshot] │        │
+│  │  Policy List │ │  MFA Config  │ │  Users View  │        │
+│  └──────────────┘ └──────────────┘ └──────────────┘        │
+│                                                               │
+│  💻 Code Execution:                                           │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ import json                                          │    │
+│  │ policies = response.json()['value']                 │    │
+│  │ mfa_enabled = [p for p in policies if ...]          │    │
+│  │ # Output: 14 policies found, 12 require MFA        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                               │
+│  [↓ Expand Details] [📋 Copy] [⚠️ Report Issue]              │
+└──────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Content Type Detection**: Automatically renders text, images, or code based on message structure
 - **Lazy Image Loading**: Intersection Observer API prevents loading off-screen evidence
@@ -982,6 +1122,37 @@ const parseMessageContent = (message: AgentMessageConfig): ParsedContent => {
 #### 6. **SampleTasks** (`frontend/src/components/views/chat/sampletasks.tsx`)
 **Purpose**: Template marketplace interface for reusable audit workflows
 **Technical Implementation**: React component with template filtering and search
+
+**Visual Layout**:
+```
+┌──────────────────────────────────────────────────────────────┐
+│  🏪 Audit Template Marketplace                                   │
+├──────────────────────────────────────────────────────────────┤
+│  🔍 Search templates...          [🏷️ GDPR] [🏷️ SOX] [🏷️ HIPAA] │
+├──────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ⭐ Popular Templates                                            │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────┐      │
+│  │ 🔐 M365 MFA Compliance Check              ⭐ 4.8/5.0  │      │
+│  │ Verify multi-factor authentication settings           │      │
+│  │ Author: Microsoft Security Team  |  v1.2.0            │      │
+│  │ Used: 1,247 times  |  Success Rate: 94%              │      │
+│  │ [▶️ Run Template] [👁️ Preview] [📥 Download]          │      │
+│  └────────────────────────────────────────────────────────┘      │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────┐      │
+│  │ 📊 GDPR Data Processing Audit              ⭐ 4.6/5.0  │      │
+│  │ Verify GDPR Article 30 compliance                     │      │
+│  │ Author: EU Compliance Experts  |  v2.0.1              │      │
+│  │ Used: 892 times  |  Success Rate: 91%                │      │
+│  │ [▶️ Run Template] [👁️ Preview] [📥 Download]          │      │
+│  └────────────────────────────────────────────────────────┘      │
+│                                                                  │
+│  [+ Upload Your Template] [📚 Browse All (47 templates)]        │
+└──────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Template Discovery**: Search and filter by compliance framework (GDPR, SOX, HIPAA)
 - **Preview Mode**: Shows template execution flow before selection
@@ -1006,6 +1177,30 @@ template:
 #### 7. **ProgressBar & Status Indicators**
 **Purpose**: Real-time audit status communication
 **Technical Implementation**: CSS animations with React state synchronization
+
+**Visual Layout**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│  📊 Audit Progress                                               │
+├─────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Overall Progress: ████████████░░░░░░░░ 65%                    │
+│  ETA: ~3 minutes remaining                                       │
+│                                                                  │
+│  Steps Completed:                                                │
+│  ✅ Navigate to Security Center        [2min 34s]               │
+│  ✅ Extract Conditional Access          [1min 12s]               │
+│  🔄 Parse Policy Configuration          [In progress...]         │
+│  ⏳ Generate Compliance Report          [Waiting...]             │
+│  ⏳ Capture Final Evidence              [Waiting...]             │
+│                                                                  │
+│  Status Indicators:                                              │
+│  ✅ Completed  🔄 Running  ⏳ Pending  ❌ Failed  ⏸️ Paused       │
+│                                                                  │
+│  [⏸️ Pause Audit] [🛑 Stop & Save] [📊 View Detailed Log]       │
+└─────────────────────────────────────────────────────────────┘
+```
+
 **UI/UX Details**:
 - **Progress Calculation**: Weighted progress based on step complexity and estimated duration
 - **Status Transitions**: Smooth animations between states (pending → running → completed)
