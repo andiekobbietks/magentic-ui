@@ -5819,6 +5819,82 @@ Saying "no" is a competitive advantage.
 | **I burn out** | Medium | High | Automate early; hire help at £10k MRR |
 | **Legal/compliance issues** | Low | High | Clear disclaimers; don't promise certification |
 
+---
+
+## Matomo Analytics Integration: Minimal Context Switching for Territory Expansion
+
+> **Why This Matters:** Analytics is the "nervous system" of your platform—tracking user behavior, optimizing workflows, and unlocking data-driven revenue. Matomo (formerly Piwik) is the privacy-first alternative to Google Analytics, perfectly aligned with your forensic/compliance focus. Integrating it with **zero context switching** means analytics feel like a native part of FARA-GRC, not a separate tool.
+
+### **What Is Matomo? Full Background**
+
+**Matomo** is the leading open-source web analytics platform, founded in 2007 as Piwik. It's a PHP/MySQL application that provides GDPR-compliant, self-hosted analytics without vendor lock-in or data sharing.
+
+**Key Features:**
+- **Privacy-First**: No cookies required by default; anonymizes IPs; EU-hosted options available.
+- **Self-Hosted**: You control the data (unlike Google Analytics).
+- **Comprehensive Tracking**: Page views, goals, funnels, session recordings, heatmaps, e-commerce tracking, custom events.
+- **SDKs & Integrations**: JavaScript for websites, Python/Node.js for backends, mobile SDKs (iOS/Android), CMS plugins (WordPress, Shopify).
+- **Real-Time Dashboards**: Live visitor tracking, customizable reports.
+- **Cost**: Free open-source version; cloud starts at €20/month for 50k page views; premium features (funnels, forms) ~$200/year for 4 users.
+
+**Why Matomo Over Google Analytics:**
+- **Compliance Alignment**: Built for privacy laws; fits your GRC theme.
+- **Self-Hosting**: Keeps data in your control, matching your forensic evidence model.
+- **No Vendor Risk**: Open-source means no "free" service that could disappear or change terms.
+- **Advanced Features**: Session recordings, heatmaps, and custom events rival paid tools.
+
+**Signal-to-Noise Success Factors:**
+- **High Signal**: Focus on actionable metrics (e.g., audit completion rates, user drop-offs) that directly inform product decisions.
+- **Low Noise**: Avoid vanity metrics; use anonymized data to respect privacy.
+- **Integration Depth**: Embed analytics in your UI (e.g., iframes or React components) so users don't switch contexts.
+- **Data Quality**: Track events server-side via APIs to capture agent actions, not just page views.
+
+### **Integration with Minimal Context Switching**
+
+**Architecture Overview:**
+- **Frontend**: Embed Matomo's JavaScript tracker in your Gatsby/React app; display dashboards as native UI components.
+- **Backend**: Use Matomo's Python SDK in FastAPI to track server-side events (e.g., audit executions).
+- **Infrastructure**: Run Matomo in a Docker container alongside your browser/Python containers; share authentication via Authentik.
+- **Data Flow**: Analytics data integrates with your PostgreSQL DB; push real-time updates via WebSocket.
+
+**Step-by-Step Integration:**
+1. **Self-Host Matomo**: Deploy via Docker (add to your `docker/` folder); configure for GDPR compliance.
+2. **Frontend Tracking**: Add JavaScript snippet to track page views, custom events (e.g., "audit_started").
+3. **Backend Tracking**: Use Python SDK to log agent actions (e.g., "evidence_captured").
+4. **UI Embedding**: Display Matomo reports in your FARA-GRC dashboard (e.g., "User Engagement" widget).
+5. **Single Sign-On**: Integrate with your Authentik setup for seamless access.
+
+**Effort Estimate:** 5-10% of your total build time (leverage existing stack: Python, React, Docker).
+
+### **How It Serves All 7 Territories**
+
+| Territory | Purpose | Use Cases | Revenue Unlock |
+|-----------|---------|-----------|----------------|
+| **1. Consulting** | Track efficiency/outcomes | Audit completion times, error rates, client satisfaction funnels | Optimize workflows; prove ROI data for higher rates |
+| **2. SaaS** | Monitor engagement/retention | User journeys, conversion funnels, feature adoption | Identify drop-offs; upsell based on usage (e.g., premium templates) |
+| **3. Marketplace** | Analyze economics/behavior | Template downloads, ratings, revenue per item | Optimize discovery; data for 70/30 splits; community insights |
+| **4. Training** | Measure learning outcomes | Progress tracking, completion rates, badge earnings | Prove "learn by doing" value; personalize curricula |
+| **5. Managed Service** | Monitor delivery/health | Automated reports, compliance scores, client dashboards | Recurring revenue insights; proactive remediation alerts |
+| **6. Data/Insights** | Aggregate intelligence | Anonymized patterns (e.g., "Top gaps in UK SMBs") | Fuel benchmark reports; sell data products (£5k-50k/license) |
+| **7. White-Label** | Track partner usage | Per-partner analytics, licensing value | Monitor deals; ensure effective adoption |
+
+**Unified Benefits:**
+- **Flywheel Acceleration**: Data from one territory feeds others (e.g., SaaS usage becomes training insights).
+- **Privacy Compliance**: Anonymized tracking aligns with your forensic model.
+- **Scalability**: One Matomo instance powers all territories.
+- **Revenue Optimization**: Actionable insights drive upsells, new features, and data monetization.
+
+**Why Minimal Context Switching Unlocks Revenue:**
+- **User Experience**: Analytics appear native (no external logins/dashboards), increasing engagement and retention.
+- **Efficiency**: Embed insights in workflows (e.g., "Your audit is 20% faster than average—upgrade?").
+- **Data Monetization**: Aggregated, anonymized data becomes sellable intelligence (Territory 6).
+- **Competitive Moat**: Privacy-first analytics differentiates from Google-dependent competitors.
+- **Exponential Growth**: Better data → Better products → More users → More data (flywheel effect).
+
+**Implementation Priority:** Add to Phase 1 (MoSCoW: MUST HAVE) as it enables data-driven decisions across all territories.
+
+---
+
 ### **The Final Checklist: Why This Works**
 
 ```
