@@ -732,7 +732,119 @@ flowchart LR
     C --> D{Integrity holds}
     D -->|Yes| E[Accept audit]
     D -->|No| F[Request clarification]
-  ```
+---
+
+## 📋 Template Schema
+
+FARA-GRC uses YAML-based templates to define reusable audit workflows. Templates are executable configurations that specify agents, tasks, parameters, and evidence requirements. They serve as the foundation for the template marketplace, allowing experts to package their knowledge and sell it to others.
+
+### Why Templates Matter
+
+Templates transform compliance auditing from a bespoke consulting service into a scalable, repeatable process:
+
+- **Standardization:** Same audit methodology across thousands of tenants
+- **Scalability:** One template serves unlimited customers
+- **Marketplace:** Experts monetize their domain knowledge
+- **Continuous Improvement:** Templates evolve with regulatory changes
+
+### Basic Template Structure
+
+```yaml
+# MFA Posture Check Template
+name: "MFA Posture Check"
+description: "Comprehensive audit of MFA settings across Azure AD Conditional Access policies"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["mfa", "authentication", "azure-ad", "compliance"]
+
+# Model configurations (reused via YAML anchors for efficiency)
+model_config_local_surfer: &client_surfer
+  provider: OpenAIChatCompletionClient
+  config:
+    model: "microsoft/Fara-7B"
+    base_url: http://localhost:5000/v1
+    api_key: not-needed
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: false
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+
+orchestrator_client: *client_surfer
+coder_client: *client_surfer
+web_surfer_client: *client_surfer
+file_surfer_client: *client_surfer
+action_guard_client: *client_surfer
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"  # Environment variable placeholder
+  portals:
+    - "Azure AD Admin Center"
+    - "Microsoft 365 Admin Center"
+  checks:
+    - name: "Global Admin MFA Enforcement"
+      type: "conditional_access_policy"
+      portal: "Azure AD"
+      path: "/conditional-access/policies"
+      criteria:
+        users: "Global Administrators"
+        controls: "Require MFA"
+      expected: true
+      severity: "critical"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"  # LLM judges risk, asks for high-risk actions
+  max_iterations: 50
+  timeout_minutes: 30
+  output_format: "forensic_bundle"  # Includes screenshots, logs, timestamps
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  consensus_verification: true
+
+# Reporting
+reporting:
+  format: "executive_summary"
+  include_recommendations: true
+  risk_scoring: "bayesian"  # Uses Bayesian risk assessment
+```
+
+### Key Sections
+
+| Section | Purpose | Example Fields |
+|---------|---------|----------------|
+| **Metadata** | Template identification and discovery | `name`, `description`, `version`, `author`, `tags` |
+| **Model Config** | AI agent configurations | `orchestrator_client`, `web_surfer_client`, etc. (with YAML anchors for reuse) |
+| **Audit Scope** | Domain-specific parameters | `tenant_id`, `portals`, `checks` (the actual audit logic) |
+| **Execution** | Runtime behavior | `approval_policy`, `max_iterations`, `timeout_minutes` |
+| **Evidence** | Forensic requirements | `screenshots`, `chain_of_thought`, `consensus_verification` |
+| **Reporting** | Output format | `format`, `include_recommendations`, `risk_scoring` |
+
+### Template Marketplace Vision
+
+The `/templates/` directory contains example templates. In production, this becomes a marketplace where:
+
+- **Consultants** upload templates for sale
+- **Enterprises** download pre-built audits
+- **Regulators** certify templates for compliance
+- **MSPs** white-label templates for their clients
+
+### Creating Custom Templates
+
+1. **Start with an example:** Copy `templates/mfa_audit_template.yaml`
+2. **Customize the checks:** Modify `audit_scope.checks` for your domain
+3. **Test locally:** Run with `magentic-cli --template your-template.yaml`
+4. **Publish:** Upload to the marketplace for others to use
+
+Templates are the "apps" of the FARA-GRC ecosystem—executable knowledge that scales infinitely.
 
 ---
 

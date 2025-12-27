@@ -6,6 +6,7 @@ import { settingsAPI } from "../views/api";
 import GeneralSettings from "./tabs/GeneralSettings/GeneralSettings";
 import AgentSettingsTab from "./tabs/agentSettings/AgentSettingsTab";
 import AdvancedConfigEditor from "./tabs/advancedSetings/AdvancedSettings";
+import TemplatesTab from "./tabs/templates/TemplatesTab";
 import {
   Button,
   Divider,
@@ -139,6 +140,19 @@ const SettingsModal: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
           <AdvancedConfigEditor
             config={config}
             darkMode={darkMode}
+            handleUpdateConfig={handleUpdateConfig}
+          />
+        </>
+      ),
+    },
+    templates: {
+      label: "Templates",
+      children: (
+        <>
+          <Typography.Text strong>Templates</Typography.Text>
+          <Divider />
+          <TemplatesTab
+            config={config}
             handleUpdateConfig={handleUpdateConfig}
           />
         </>

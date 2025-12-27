@@ -1,0 +1,85 @@
+# MFA Posture Check Template
+# Example audit template for verifying Multi-Factor Authentication settings
+
+name: "MFA Posture Check"
+description: "Comprehensive audit of MFA settings across Azure AD Conditional Access policies"
+version: "1.0.0"
+author: "FARA-GRC Team"
+tags: ["mfa", "authentication", "azure-ad", "compliance"]
+
+# Model configurations (reused via YAML anchors)
+model_config_local_surfer: &client_surfer
+  provider: OpenAIChatCompletionClient
+  config:
+    model: "microsoft/Fara-7B"
+    base_url: http://localhost:5000/v1
+    api_key: not-needed
+    model_info:
+      vision: true
+      function_calling: true
+      json_output: false
+      family: "unknown"
+      structured_output: false
+      multiple_system_messages: false
+
+orchestrator_client: *client_surfer
+coder_client: *client_surfer
+web_surfer_client: *client_surfer
+file_surfer_client: *client_surfer
+action_guard_client: *client_surfer
+
+# Audit scope and parameters
+audit_scope:
+  tenant_id: "${TENANT_ID}"  # Environment variable placeholder
+  portals:
+    - "Azure AD Admin Center"
+    - "Microsoft 365 Admin Center"
+  checks:
+    - name: "Global Admin MFA Enforcement"
+      type: "conditional_access_policy"
+      portal: "Azure AD"
+      path: "/conditional-access/policies"
+      criteria:
+        users: "Global Administrators"
+        controls: "Require MFA"
+      expected: true
+      severity: "critical"
+
+    - name: "Legacy Authentication Disabled"
+      type: "authentication_methods"
+      portal: "Azure AD"
+      path: "/authentication-methods"
+      criteria:
+        legacy_protocols: "disabled"
+      expected: true
+      severity: "high"
+
+    - name: "Emergency Access Accounts MFA"
+      type: "user_accounts"
+      portal: "Azure AD"
+      path: "/users/emergency-access"
+      criteria:
+        mfa_enabled: true
+      expected: true
+      severity: "critical"
+
+# Execution settings
+execution:
+  approval_policy: "auto-conservative"  # LLM judges risk, asks for high-risk actions
+  max_iterations: 50
+  timeout_minutes: 30
+  output_format: "forensic_bundle"  # Includes screenshots, logs, timestamps
+
+# Evidence requirements
+evidence:
+  screenshots: true
+  api_responses: true
+  chain_of_thought: true
+  timestamps: true
+  consensus_verification: true
+
+# Reporting
+reporting:
+  format: "executive_summary"
+  include_recommendations: true
+  risk_scoring: "bayesian"  # Uses Bayesian risk assessment
