@@ -848,7 +848,549 @@ Templates are the "apps" of the FARA-GRC ecosystem—executable knowledge that s
 
 ---
 
-## 🚀 Quick Start
+## 🎨 FARA-GRC UI Kit: Specialized Interface for Forensic Compliance Auditing
+
+FARA-GRC's user interface is not a generic web application—it's a purpose-built toolkit specifically designed for compliance auditing workflows with forensic-grade evidence capture. Every component is engineered to support the audit trail, human oversight, and evidence verification requirements of regulatory compliance.
+
+### Core Design Philosophy
+
+**Audit-Centric Architecture**: Unlike general-purpose UIs, FARA-GRC's interface treats every user interaction as potential audit evidence. Components are designed with "chain-of-custody" principles, ensuring that user decisions, AI actions, and evidence collection are all timestamped, logged, and cryptographically verifiable.
+
+**Human-in-the-Loop Compliance**: The UI enforces approval workflows for sensitive operations, displays forensic evidence in real-time, and provides audit trails for every decision point in the compliance process.
+
+---
+
+### 🔧 Atomic Component Breakdown
+
+#### 1. **ChatView** (`frontend/src/components/views/chat/chat.tsx`)
+**Purpose**: Main orchestration interface for compliance audit sessions  
+**Technical Implementation**: React class component with WebSocket integration
+**UI/UX Details**: 
+- **State Management**: Uses React hooks for session state, message history, and real-time updates
+- **WebSocket Connection**: Maintains persistent connection to backend for live audit streaming
+- **Error Boundaries**: Catches and displays audit execution errors without breaking the session
+- **Responsive Design**: Adapts layout for desktop audit workstations vs mobile compliance review
+- **Keyboard Navigation**: Full keyboard accessibility for compliance officers with motor impairments
+
+**Data Structures**:
+```typescript
+interface ChatViewProps {
+  session: Session | null;           // Current audit session with ID and metadata
+  onSessionNameChange: (data: Partial<Session>) => void;  // Session persistence callback
+  getSessionSocket: (sessionId: number, runId: string, fresh: boolean, existingOnly: boolean) => WebSocket | null;
+}
+```
+
+**Performance Considerations**:
+- Message virtualization for audit sessions with 1000+ messages
+- Lazy loading of evidence images to prevent UI blocking
+- Debounced input to prevent excessive API calls during typing
+
+#### 2. **Plan Component** (`frontend/src/components/views/chat/plan.tsx`)
+**Purpose**: Interactive audit plan builder and executor
+**Technical Implementation**: React functional component with drag-and-drop using `@hello-pangea/dnd`
+**UI/UX Details**:
+- **Drag-and-Drop UX**: Visual feedback during plan reordering with drop zones and ghost images
+- **Auto-save**: Debounced persistence prevents data loss during plan editing
+- **Validation Feedback**: Real-time validation shows invalid plan steps before execution
+- **Progressive Disclosure**: Collapsible plan sections reduce cognitive load during long audits
+- **Context Menus**: Right-click options for plan step duplication, deletion, and modification
+
+**State Management**:
+```typescript
+const [planSteps, setPlanSteps] = useState<IPlanStep[]>([]);
+const [isDragging, setIsDragging] = useState(false);
+const [validationErrors, setValidationErrors] = useState<string[]>([]);
+```
+
+**Accessibility Features**:
+- ARIA labels for screen readers during drag operations
+- Keyboard shortcuts for plan manipulation (Ctrl+D duplicate, Delete key removal)
+- High contrast mode support for compliance officers with visual impairments
+
+#### 3. **ApprovalButtons** (`frontend/src/components/views/chat/approval_buttons.tsx`)
+**Purpose**: Human oversight controls for sensitive audit operations
+**Technical Implementation**: React functional component with conditional rendering
+**UI/UX Details**:
+- **Conditional Rendering**: Only displays when `status === "awaiting_input"` to reduce visual clutter
+- **Loading States**: Shows spinner during approval API calls to prevent double-clicks
+- **Confirmation Dialogs**: Modal confirmations for destructive actions with clear consequences
+- **Audit Logging**: Every button click creates immutable audit trail entries
+- **Policy Indicators**: Visual cues show whether action is auto-approved or requires manual review
+
+**Button States**:
+```typescript
+type ButtonState = "idle" | "loading" | "success" | "error";
+const [approveState, setApproveState] = useState<ButtonState>("idle");
+```
+
+**Error Handling**:
+- Network failure fallbacks with retry mechanisms
+- User feedback for approval timeouts
+- Rollback UI state on failed approvals
+
+#### 4. **DetailViewer Ecosystem** (`frontend/src/components/views/chat/DetailViewer/`)
+**Purpose**: Forensic evidence display and verification interface
+**Technical Implementation**: React portal-based modals for overlay rendering
+**UI/UX Details**:
+- **Portal Rendering**: Renders outside main DOM tree to avoid z-index conflicts
+- **Fullscreen Mode**: F11-like experience for detailed evidence inspection
+- **Zoom Controls**: Mouse wheel and pinch-to-zoom for screenshot analysis
+- **Metadata Overlay**: Hover tooltips show evidence timestamps and capture conditions
+- **Evidence Gallery**: Thumbnail grid for browsing multiple screenshots per audit step
+
+**Browser Integration**:
+```typescript
+// NoVNC WebSocket connection for live browser sessions
+const novncConnection = new RFB(canvasElement, websocketUrl);
+novncConnection.scaleViewport = true;  // Responsive scaling
+```
+
+**Security Considerations**:
+- Content Security Policy headers prevent XSS in evidence display
+- Sandboxed iframes for untrusted content rendering
+- CORS validation for evidence image loading
+
+#### 5. **RenderMessage** (`frontend/src/components/views/chat/rendermessage.tsx`)
+**Purpose**: Multi-modal message rendering with evidence integration
+**Technical Implementation**: React memo component with content type detection
+**UI/UX Details**:
+- **Content Type Detection**: Automatically renders text, images, or code based on message structure
+- **Lazy Image Loading**: Intersection Observer API prevents loading off-screen evidence
+- **Syntax Highlighting**: Prism.js integration for code evidence readability
+- **Expandable Sections**: Collapsible message content to manage long audit reports
+- **Copy-to-Clipboard**: One-click copying of evidence snippets for report inclusion
+
+**Message Parsing**:
+```typescript
+const parseMessageContent = (message: AgentMessageConfig): ParsedContent => {
+  // Detect multimodal content, function calls, plan data, etc.
+  return {
+    text: parsedText,
+    images: extractedImages,
+    metadata: messageMetadata,
+    plan: extractedPlan
+  };
+};
+```
+
+**Performance Optimizations**:
+- React.memo prevents unnecessary re-renders of unchanged messages
+- Virtual scrolling for message lists in long audit sessions
+- Image lazy loading with blur placeholders
+
+#### 6. **SampleTasks** (`frontend/src/components/views/chat/sampletasks.tsx`)
+**Purpose**: Template marketplace interface for reusable audit workflows
+**Technical Implementation**: React component with template filtering and search
+**UI/UX Details**:
+- **Template Discovery**: Search and filter by compliance framework (GDPR, SOX, HIPAA)
+- **Preview Mode**: Shows template execution flow before selection
+- **Customization UI**: Parameter input forms for template adaptation
+- **Usage Analytics**: Shows template popularity and success rates
+- **Version Control**: Template version history for regulatory compliance
+
+**Template Structure**:
+```yaml
+template:
+  name: "M365 MFA Audit"
+  version: "1.2.0"
+  parameters:
+    - name: "tenant_id"
+      type: "string"
+      required: true
+    - name: "user_scope"
+      type: "enum"
+      options: ["all", "licensed", "security_group"]
+```
+
+#### 7. **ProgressBar & Status Indicators**
+**Purpose**: Real-time audit status communication
+**Technical Implementation**: CSS animations with React state synchronization
+**UI/UX Details**:
+- **Progress Calculation**: Weighted progress based on step complexity and estimated duration
+- **Status Transitions**: Smooth animations between states (pending → running → completed)
+- **ETA Display**: Estimated completion time based on historical execution data
+- **Step Details**: Hover tooltips show current operation and sub-progress
+- **Error States**: Distinct visual treatment for failed steps with retry options
+
+**Animation Implementation**:
+```css
+.progress-bar {
+  transition: width 0.3s ease-in-out;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+@keyframes pulse-error {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+```
+
+---
+
+### 🔄 Data Flow Architecture
+
+#### Message Processing Pipeline
+
+```
+Raw WebSocket Data → Message Parser → Content Type Detection → Render Component → UI Update
+        ↓                    ↓                    ↓                    ↓            ↓
+   JSON Parsing → TypeScript Interfaces → React Props → Virtual DOM → Browser Paint
+```
+
+#### State Synchronization
+
+**Client-Server State Sync**:
+- **Optimistic Updates**: UI updates immediately, rolls back on server rejection
+- **Conflict Resolution**: Server state always wins in case of discrepancies
+- **Offline Mode**: Local state persistence during network interruptions
+
+**State Persistence**:
+```typescript
+// Zustand store with persistence
+const useAuditStore = create<AuditState>()(
+  persist(
+    (set, get) => ({
+      sessions: [],
+      currentSession: null,
+      // ... state management
+    }),
+    { name: 'audit-store' }
+  )
+);
+```
+
+#### Real-time Communication Patterns
+
+**WebSocket Message Types**:
+- **Session Updates**: Live session metadata changes
+- **Message Streams**: Incremental message content for long responses
+- **Status Events**: Step execution progress and completion
+- **Error Notifications**: Real-time error reporting with recovery options
+
+---
+
+### 🎯 Advanced UI/UX Patterns for Compliance
+
+#### 1. **Audit Trail Visualization**
+```typescript
+// Timeline component showing audit chronology
+const AuditTimeline = ({ sessionId }: { sessionId: number }) => {
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+  
+  useEffect(() => {
+    // Load chronological audit events
+    loadAuditTrail(sessionId).then(setEvents);
+  }, [sessionId]);
+
+  return (
+    <div className="timeline">
+      {events.map(event => (
+        <TimelineItem 
+          key={event.id}
+          timestamp={event.timestamp}
+          action={event.action}
+          user={event.user}
+          evidence={event.evidence}
+        />
+      ))}
+    </div>
+  );
+};
+```
+
+#### 2. **Evidence Correlation Matrix**
+Visual representation showing relationships between different evidence types:
+- Screenshots linked to API responses
+- User actions connected to system changes
+- Approval decisions tied to executed operations
+
+#### 3. **Progressive Evidence Loading**
+```typescript
+// Load evidence in priority order
+const EvidenceLoader = ({ messageId }: { messageId: string }) => {
+  const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Load text first, then images, then large files
+    loadEvidencePriority(messageId).then(setEvidence);
+  }, [messageId]);
+  
+  return (
+    <div>
+      {evidence.map(item => (
+        <EvidenceItemRenderer key={item.id} item={item} />
+      ))}
+    </div>
+  );
+};
+```
+
+---
+
+### 🛡️ Advanced Security & Compliance Features
+
+#### Cryptographic Evidence Integrity
+```typescript
+interface EvidenceMetadata {
+  id: string;
+  timestamp: string;
+  hash: string;           // SHA-256 of content
+  signature: string;      // Digital signature
+  chainHash: string;      // Hash linking to previous evidence
+  captureMethod: string;  // Screenshot, API, manual entry
+  userAgent: string;      // Browser fingerprint
+  sessionId: string;      // Audit session identifier
+}
+```
+
+#### Audit Trail Immutability
+- **Blockchain-like Linking**: Each evidence item references previous items
+- **Timestamp Authority**: NTP-synchronized server timestamps
+- **Digital Signatures**: Cryptographic proof of evidence authenticity
+
+#### Access Control Integration
+- **Role-Based UI**: Different interfaces for auditors vs. compliance officers
+- **Evidence Redaction**: Automatic masking of sensitive data in screenshots
+- **Approval Workflows**: Multi-level approval for high-risk operations
+
+---
+
+### 🚀 Performance & Scalability Considerations
+
+#### Memory Management
+- **Message Virtualization**: Only render visible messages in long audit sessions
+- **Image Optimization**: Automatic resizing and WebP conversion for evidence
+- **State Cleanup**: Automatic removal of old session data to prevent memory leaks
+
+#### Network Optimization
+- **WebSocket Compression**: Binary message compression for real-time updates
+- **Evidence Chunking**: Large evidence files split into manageable chunks
+- **Caching Strategy**: Browser caching for template data and UI assets
+
+#### Browser Compatibility
+- **Progressive Enhancement**: Core functionality works without JavaScript
+- **Polyfill Strategy**: Automatic loading of required browser APIs
+- **Fallback UI**: Simplified interface for older browsers or low-bandwidth connections
+
+---
+
+### 🔧 Development & Customization
+
+#### Component Extension Pattern
+```typescript
+// Base component for audit-specific extensions
+abstract class BaseAuditComponent<P = {}, S = {}> extends React.Component<P, S> {
+  protected logAuditEvent(action: string, metadata: any) {
+    // Standardized audit logging
+    this.props.onAuditEvent?.({
+      timestamp: new Date().toISOString(),
+      action,
+      component: this.constructor.name,
+      metadata
+    });
+  }
+  
+  protected requireApproval(action: string): Promise<boolean> {
+    // Standardized approval workflow
+    return this.props.approvalGuard?.requestApproval(action);
+  }
+}
+```
+
+#### Theme Customization
+```typescript
+// Compliance-specific theme configuration
+const auditTheme = {
+  colors: {
+    primary: '#1e40af',      // Professional blue
+    success: '#059669',      // Compliance green
+    warning: '#d97706',      // Audit amber
+    error: '#dc2626',       // Critical red
+    evidence: '#6b7280',     // Neutral gray for evidence
+  },
+  typography: {
+    auditFont: '"Inter", system-ui, sans-serif',
+    evidenceFont: '"JetBrains Mono", monospace',
+  },
+  spacing: {
+    auditStep: '1.5rem',     // Standard audit step spacing
+    evidenceGap: '0.75rem',  // Evidence item separation
+  }
+};
+```
+
+#### Testing Strategy
+- **Visual Regression**: Screenshot comparison for UI consistency
+- **Accessibility Audit**: Automated WCAG compliance checking
+- **Performance Benchmarking**: Lighthouse CI for UI performance metrics
+- **Cross-browser Testing**: Automated testing across compliance officer environments
+
+---
+
+This comprehensive UI Kit documentation provides the complete technical context needed to understand, extend, and maintain FARA-GRC's specialized compliance auditing interface, from basic component interactions to advanced forensic evidence handling and performance optimization.
+
+---
+
+### 🔄 Data Flow Architecture
+
+#### Audit Session Lifecycle
+
+```
+User Request → Plan Generation → Human Approval → Step Execution → Evidence Capture → Final Report
+     ↓             ↓                ↓             ↓              ↓              ↓
+  ChatInput →   PlanView →  ApprovalButtons → RunView → DetailViewer → RenderMessage
+```
+
+#### Evidence Chain-of-Custody
+
+1. **Capture**: Browser actions generate screenshots with metadata
+2. **Storage**: Evidence stored in PostgreSQL with cryptographic hashes
+3. **Display**: DetailViewer renders evidence with verification controls
+4. **Verification**: Human approval creates audit trail links
+5. **Export**: Forensic bundles include all evidence with timestamps
+
+#### Real-time Communication
+
+- **WebSocket Streams**: Live audit execution updates
+- **Message History**: Immutable audit trail storage
+- **Session Persistence**: Cross-session evidence continuity
+
+---
+
+### 🎯 Compliance-Specific UI Patterns
+
+#### 1. **Approval-First Design**
+Every potentially destructive action requires explicit human consent:
+```tsx
+// Approval workflow in action
+<ApprovalButtons 
+  status="awaiting_input"
+  inputRequest={{ input_type: "approval" }}
+  onApprove={() => logAuditEvent('APPROVED', metadata)}
+  onDeny={() => logAuditEvent('DENIED', metadata)}
+/>
+```
+
+#### 2. **Evidence-Centric Messaging**
+Messages aren't just text—they're evidence containers:
+```tsx
+// Multi-modal evidence display
+<RenderMessage 
+  message={auditMessage}
+  onImageClick={(index) => showEvidenceModal(index)}
+  sessionId={session.id}
+/>
+```
+
+#### 3. **Plan-Driven Workflows**
+Audit processes follow structured, auditable plans:
+```tsx
+// Interactive plan execution
+<PlanView 
+  plan={compliancePlan}
+  onSavePlan={(updatedPlan) => saveAuditPlan(updatedPlan)}
+  onRegeneratePlan={() => requestPlanRegeneration()}
+/>
+```
+
+#### 4. **Forensic Browser Integration**
+Live browser sessions with evidence capture:
+```tsx
+// Browser modal with controls
+<BrowserModal 
+  isOpen={showBrowser}
+  novncPort={browserPort}
+  onControlHandover={() => transferHumanControl()}
+  title="M365 Security Center - Live Audit Session"
+/>
+```
+
+---
+
+### 🛡️ Security & Compliance Features
+
+#### Human Oversight Controls
+- **Plan Review**: All audit plans require human approval before execution
+- **Step Approval**: Sensitive operations (data modification, system changes) need consent
+- **Session Monitoring**: Real-time visibility into AI agent actions
+
+#### Evidence Integrity
+- **Cryptographic Hashing**: All evidence includes SHA-256 hashes
+- **Timestamp Authority**: NTP-synchronized timestamps on all actions
+- **Chain-of-Custody**: Complete audit trail from request to final report
+
+#### Audit Trail Management
+- **Session Persistence**: Audit sessions survive browser refreshes
+- **Message Immutability**: Historical messages cannot be altered
+- **Export Capabilities**: Forensic evidence bundles for regulatory submission
+
+---
+
+### 🚀 Specialized Components for M365 Auditing
+
+#### M365 Portal Navigation
+- **Admin Center Routing**: Pre-configured navigation to security, Exchange, Teams centers
+- **Policy Verification**: Automated checking of MFA, DLP, and compliance settings
+- **Evidence Capture**: Screenshots with UI element metadata and timestamps
+
+#### Template Marketplace Integration
+- **Reusable Audits**: Pre-built compliance checks for common regulations
+- **Custom Templates**: Organization-specific audit workflows
+- **Template Execution**: Standardized evidence collection and reporting
+
+#### Real-time Evidence Display
+- **Live Browser Sessions**: Direct viewing of M365 portal interactions
+- **Screenshot Galleries**: Forensic evidence with metadata overlays
+- **API Response Logging**: Backend verification of UI-observed data
+
+---
+
+### 📊 Component Hierarchy & Dependencies
+
+```
+ChatView (Main Container)
+├── ChatInput (User Interaction)
+├── PlanView (Audit Planning)
+│   ├── PlanStep (Individual Tasks)
+│   └── ApprovalButtons (Human Oversight)
+├── RunView (Execution Monitoring)
+│   ├── ProgressBar (Status Display)
+│   └── StatusIcon (State Indicators)
+├── DetailViewer (Evidence Display)
+│   ├── BrowserModal (Live Sessions)
+│   ├── BrowserIframe (Embedded Browser)
+│   └── FullscreenOverlay (Evidence Zoom)
+└── RenderMessage (Content Display)
+    ├── MarkdownRenderer (Text Content)
+    ├── ClickableImage (Evidence Images)
+    └── RenderFile (Document Evidence)
+```
+
+---
+
+### 🔧 Development & Customization
+
+#### Adding New Audit Components
+1. **Extend Base Components**: Inherit from existing UI primitives
+2. **Implement Forensic Logging**: Add timestamp and metadata capture
+3. **Integrate Approval Workflows**: Connect to approval guard system
+4. **Test Evidence Integrity**: Verify chain-of-custody preservation
+
+#### Styling & Theming
+- **TailwindCSS**: Utility-first styling for rapid customization
+- **Component Libraries**: Ant Design + Lucide icons for consistency
+- **Compliance Themes**: Specialized color schemes for audit states
+
+#### State Management
+- **Zustand Stores**: Lightweight state management for audit sessions
+- **WebSocket Integration**: Real-time updates for live audits
+- **Local Storage**: Session persistence across browser refreshes
+
+---
+
+This UI Kit represents a fundamental rethinking of compliance tooling—moving from static spreadsheets and manual screenshots to interactive, forensic-grade audit interfaces that maintain court-admissible evidence chains while providing the human oversight necessary for regulatory compliance.
 
 ### Prerequisites
 *   Docker (Desktop or Engine)

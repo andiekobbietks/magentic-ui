@@ -1,23 +1,24 @@
-# Magentic-UI Copilot Instructions
+# FARA-GRC Copilot Instructions
 
 ## Quick Start for Service-Oriented Minds (LAMP/XAMPP Background)
 
 If you know PHP/MySQL stacks and IT L1-L2 service management:
 - Think of this like **Apache (presentation) → PHP (business logic) → MySQL (data)**
-- **Magentic-UI is the entire stack rolled into one smart service** that:
+- **FARA-GRC is the entire stack rolled into one smart service** that:
   - Listens to user requests (like HTTP requests)
   - Plans how to respond (generates a workflow/script)
   - Executes actions via agents (like spawning services/processes)
   - Stores decisions and states (like database transactions)
   - Asks for approval before destructive operations (like sudo prompts)
+  - **Captures forensic evidence** with timestamps, hashes, and chain-of-custody metadata
 
-**Key difference from LAMP**: Instead of synchronous request-response, this is async state machine with human checkpoints.
+**Key difference from LAMP**: Instead of synchronous request-response, this is async state machine with human checkpoints and **court-admissible audit trails**.
 
 ---
 
 ## Project Overview
 
-**Magentic-UI** is a human-centered AI agent framework for automating web and coding tasks with built-in human oversight. It's a research prototype built on [AutoGen](https://microsoft.github.io/autogen/) that combines web browsing, code execution, and file analysis with an approval guard for sensitive operations.
+**FARA-GRC** (Forensic AI-Reasoned Automation for Governance, Risk & Compliance) is an AI-native compliance platform built on AutoGen that automates M365 auditing with forensic-grade evidence capture. It combines web browsing, code execution, and file analysis with built-in human oversight to reimagine compliance auditing from first principles.
 
 ### What It Actually Does (Three Ways to Understand)
 
@@ -25,26 +26,28 @@ If you know PHP/MySQL stacks and IT L1-L2 service management:
 ```
 User Request Layer    → FastAPI Web Service (frontend/API)
 Planning Layer        → Orchestrator (decides what steps)  
-Execution Layer       → Agents (WebSurfer/Coder/FileSurfer)
+Execution Layer       → Agents (FaraWebSurfer/Coder/FileSurfer)
 Data Persistence      → PostgreSQL + SQLModel ORM
 Safety/Approval Layer → ApprovalGuard (like firewall rules)
+Forensic Layer        → Evidence capture with metadata/timestamps
 ```
 
 **Option B - IT Service Management Perspective:**
-- **Incident**: User submits task
-- **Diagnosis**: Orchestrator plans steps
+- **Incident**: User submits audit task
+- **Diagnosis**: Orchestrator plans audit steps
 - **Resolution**: Agents execute (with approvals as needed)
-- **Documentation**: Message history stored (audit trail)
+- **Documentation**: Message history + forensic evidence stored (audit trail)
 - **Escalation**: Human approval for sensitive operations
+- **Evidence**: Court-admissible screenshots with metadata
 
 **Option C - Technical Deep Dive:**
-Built on AutoGen (Microsoft's multi-agent framework), it routes tasks to specialized agents (WebSurfer for browsing, Coder for execution, FileSurfer for analysis) with an orchestrator making decisions step-by-step.
+Built on AutoGen (Microsoft's multi-agent framework), it routes audit tasks to specialized agents (FaraWebSurfer for M365 portal navigation, Coder for evidence processing, FileSurfer for analysis) with an orchestrator making decisions step-by-step. **Forensic evidence** includes timestamps, UI element metadata, and chain-of-custody tracking.
 
 ## Architecture & Data Flow
 
 ### Layer 1: The Service Stack (LAMP Equivalent)
 
-| Layer | LAMP Equivalent | Magentic-UI Component | Purpose | Key Files |
+| Layer | LAMP Equivalent | FARA-GRC Component | Purpose | Key Files |
 |-------|-----------------|----------------------|---------|-----------|
 | **Presentation** | Apache/Nginx | FastAPI Web Service | Receives requests, serves UI | `src/magentic_ui/backend/web/` |
 | **Business Logic** | PHP/Python App | Orchestrator | Decision-making, planning, routing | `src/magentic_ui/teams/orchestrator/` |
@@ -87,7 +90,7 @@ Built on AutoGen (Microsoft's multi-agent framework), it routes tasks to special
 - **Key state machine**: Planning mode → Execution mode → Final answer mode
 
 **Agents** (The "worker processes")
-- **WebSurfer** (`src/magentic_ui/agents/web_surfer/`): Browses web like Selenium/Playwright
+- **FaraWebSurfer** (`src/magentic_ui/agents/web_surfer/fara/`): Forensic web browsing for M365 portals with evidence capture
 - **Coder** (`src/magentic_ui/agents/_coder.py`): Executes Python in Docker (like exec() with sandbox)
 - **FileSurfer** (from autogen-ext): Reads files and directories
 - **MCP Agents**: Custom agents via Model Context Protocol
@@ -100,6 +103,7 @@ Built on AutoGen (Microsoft's multi-agent framework), it routes tasks to special
   - `"auto-conservative"`: LLM guesses if reversible; asks only for non-reversible
   - `"auto-permissive"`: Lenient approach
 - **Key insight**: Prevents data loss/corruption like database transactions
+- **Forensic aspect**: All approvals logged with timestamps for audit trails
 
 **Backend Services** (`src/magentic_ui/backend/`)
 - FastAPI server (like Apache handling requests)
@@ -134,7 +138,7 @@ Result: Message can be recovered from any layer if others fail
 
 **Message Types Used**:
 - `TextMessage`: Pure text (task descriptions, plans)
-- `MultiModalMessage`: Text + images (browser screenshots)
+- `MultiModalMessage`: Text + images (browser screenshots with forensic metadata)
 - `SystemMessage`: Internal orchestrator instructions
 - All stored in `message_history` for context window
 
@@ -142,6 +146,11 @@ Result: Message can be recovered from any layer if others fail
 - Default: 110,000 tokens (like memory cache size)
 - Enforced by `TokenLimitedChatCompletionContext`
 - Prevents LLM context explosion (like preventing infinite loops)
+
+**Forensic Evidence Storage**:
+- Screenshots captured with timestamps, UI element coordinates, and hash values
+- Chain-of-custody metadata for court-admissible evidence
+- Audit trails linking actions to approvals and user decisions
 
 ### Layer 5: Configuration Hierarchy (Redundant Specification)
 
@@ -285,35 +294,96 @@ plan = [
 **Three execution modes** (choose based on trust level):
 
 ```
-Cooperative (default):
-  Step 1: Generate plan
+Cooperative (default for compliance):
+  Step 1: Generate audit plan
   ├─> User reviews and approves plan
-  Step 2: Orchestrator executes
+  Step 2: Orchestrator executes audit steps
   ├─> Each step requires user confirmation before approval
-  ├─> User can pause/modify steps
-  └─> Final answer requires user acceptance
+  ├─> User can pause/modify audit steps
+  └─> Final audit report requires user acceptance
 
-Autonomous:
-  Step 1: Generate plan (user doesn't see it)
-  Step 2: Execute steps without stopping
+Autonomous (for trusted environments):
+  Step 1: Generate audit plan (user doesn't see it)
+  Step 2: Execute audit steps without stopping
   ├─> Approval guard still enforces policies
-  └─> Final answer generated without user OK
+  └─> Final audit report generated without user OK
 
 Hybrid (configurable):
-  ├─> Trust the planning (skip user approval of plan)
-  └─> But require approval for dangerous actions
+  ├─> Trust the planning (skip user approval of audit plan)
+  └─> But require approval for sensitive M365 operations
 ```
 
 Configuration:
 ```python
 MagenticUIConfig(
-    cooperative_planning=True,        # Show plan to user first
-    autonomous_execution=False,       # Ask user before dangerous ops
+    cooperative_planning=True,        # Show audit plan to user first
+    autonomous_execution=False,       # Ask user before sensitive operations
     approval_policy="auto-conservative"  # Smart guard decisions
 )
 ```
 
-## Development Workflow
+## M365-Specific Patterns & Conventions
+
+### Forensic Evidence Capture Pattern
+
+**Why it matters**: FARA-GRC produces court-admissible evidence, not just screenshots.
+
+**Key components**:
+```python
+# Evidence metadata captured with every screenshot
+evidence = {
+    "timestamp": datetime.utcnow().isoformat(),
+    "url": current_url,
+    "viewport_coords": (x, y, width, height),
+    "ui_element_hash": hash_of_element,
+    "chain_of_custody": user_session_id,
+    "action_performed": "clicked_mfa_toggle"
+}
+```
+
+**Evidence storage layers**:
+1. **In-memory**: MultiModalMessage with PIL Image + metadata
+2. **Database**: PostgreSQL with foreign keys to sessions
+3. **Files**: Timestamped PNG files with EXIF metadata
+4. **Audit trail**: JSON logs linking actions to approvals
+
+### M365 Portal Navigation Patterns
+
+**Admin Center routing** (FaraWebSurfer specialization):
+```python
+# Pattern: Navigate to specific M365 admin portals
+await web_surfer.navigate_to_admin_center("security")
+await web_surfer.navigate_to_admin_center("exchange") 
+await web_surfer.navigate_to_admin_center("teams")
+```
+
+**Policy verification workflow**:
+1. Navigate to admin center
+2. Search for policy name
+3. Extract current settings
+4. Compare against requirements
+5. Capture evidence screenshot
+6. Generate compliance report
+
+### Template Marketplace Pattern
+
+**Reusable audit templates** (future feature):
+```yaml
+# MFA Audit Template
+name: "M365 MFA Compliance Check"
+steps:
+  - navigate: "https://security.microsoft.com"
+  - search: "Conditional Access"
+  - extract: "MFA policies"
+  - verify: "All users require MFA"
+  - evidence: "Screenshot with timestamp"
+```
+
+**Template execution**:
+- User selects template from marketplace
+- Orchestrator adapts template to tenant specifics
+- Agents execute with forensic capture
+- Results stored in compliance database
 
 ### Running & Testing
 
@@ -539,7 +609,7 @@ tests/                               ← TEST SUITE
 
 **"I need to modify agent behavior"**:
 - [src/magentic_ui/agents/_coder.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/agents/_coder.py) - Code execution
-- [src/magentic_ui/agents/web_surfer/_web_surfer.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/agents/web_surfer/_web_surfer.py) - Web browsing
+- [src/magentic_ui/agents/web_surfer/fara/_fara_web_surfer.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/agents/web_surfer/fara/_fara_web_surfer.py) - Forensic web browsing for M365
 
 **"I need to change the UI or API"**:
 - [src/magentic_ui/backend/web/](https://github.com/andiekobbietks/fara-grc-magentic-ui/tree/main/src/magentic_ui/backend/web) - FastAPI routes
@@ -678,18 +748,19 @@ This project uses **Shannon Entropy** principles to ensure resilience:
 ## When to Use This Project
 
 ✅ **Good fit for**:
-- Automating repetitive web tasks (form filling, data scraping)
-- Code execution with human oversight
-- Long-running monitoring tasks ("Tell me when X happens")
-- Learning multi-agent AI architectures
-- Building approval workflows for sensitive operations
-- Scenarios where you need human-in-the-loop (not fully autonomous AI)
+- Automating repetitive M365 admin portal tasks (policy checks, configuration audits)
+- Code execution with human oversight for compliance verification
+- Long-running monitoring tasks ("Alert me when MFA settings change")
+- Learning multi-agent AI architectures for enterprise automation
+- Building approval workflows for sensitive IT operations
+- Scenarios requiring court-admissible audit evidence with chain-of-custody
 
 ❌ **Not ideal for**:
 - Real-time performance-critical tasks (LLM latency inevitable)
 - Tasks requiring instant human response (human loop takes time)
-- Fully offline scenarios (needs web + code execution)
+- Fully offline scenarios (needs web access for M365 portals)
 - Simple chatbots (overkill architecture)
+- Non-M365 web automation (though possible, not the primary focus)
 
 ---
 
@@ -697,7 +768,7 @@ This project uses **Shannon Entropy** principles to ensure resilience:
 
 ### If you're from LAMP/XAMPP:
 - **Orchestrator** ≈ PHP app logic
-- **Agents** ≈ function libraries (WebSurfer function, Coder function)
+- **Agents** ≈ function libraries (FaraWebSurfer function, Coder function)
 - **ApprovalGuard** ≈ sudo permissions system
 - **Database** ≈ session/transaction storage
 - **Frontend** ≈ Gatsby-built React (not PHP templates)
@@ -716,3 +787,4 @@ This project uses **Shannon Entropy** principles to ensure resilience:
 - **Approval** ≈ Change advisory board (CAB)
 - **Message History** ≈ Audit trail/documentation
 - **Final Answer** ≈ Resolution & customer communication
+- **Forensic Evidence** ≈ Court-admissible documentation with timestamps/hashes
