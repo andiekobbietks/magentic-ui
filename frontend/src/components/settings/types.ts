@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ModelConfigSchema } from "./tabs/agentSettings/modelSelector/modelConfigForms/types";
 import { MCPAgentConfigSchema } from "../features/McpServersConfig/types";
+import { GeneralConfig } from "../store";
 
 export const GeneralSettingsSchema = z.object({
   cooperative_planning: z.boolean(),
@@ -32,6 +33,6 @@ export const GeneralSettingsSchema = z.object({
 export type GeneralSettings = z.infer<typeof GeneralSettingsSchema>
 
 export interface SettingsTabProps {
-  config: GeneralSettings;
+  config: GeneralConfig;
   handleUpdateConfig: (changes: any) => void;
 }
