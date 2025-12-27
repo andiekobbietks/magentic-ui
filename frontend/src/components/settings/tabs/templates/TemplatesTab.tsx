@@ -15,7 +15,7 @@ import {
   Tag,
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, CodeOutlined } from "@ant-design/icons";
-import { useSettingsStore } from "../../store";
+import { useSettingsStore } from "../../../store";
 
 const { TextArea } = Input;
 const { Option } = Select;

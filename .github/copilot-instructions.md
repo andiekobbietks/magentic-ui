@@ -530,24 +530,24 @@ tests/                               ← TEST SUITE
 ### Key Files by Use Case
 
 **"I need to understand agent coordination"**:
-- [src/magentic_ui/teams/orchestrator/_orchestrator.py](src/magentic_ui/teams/orchestrator/_orchestrator.py) - Master orchestrator logic
-- [src/magentic_ui/task_team.py](src/magentic_ui/task_team.py) - How agents are assembled
+- [src/magentic_ui/teams/orchestrator/_orchestrator.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/teams/orchestrator/_orchestrator.py) - Master orchestrator logic
+- [src/magentic_ui/task_team.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/task_team.py) - How agents are assembled
 
 **"I need to add approval/safety logic"**:
-- [src/magentic_ui/approval_guard.py](src/magentic_ui/approval_guard.py) - Approval policies
-- [src/magentic_ui/tools/tool_metadata.py](src/magentic_ui/tools/tool_metadata.py) - Tool safety declarations
+- [src/magentic_ui/approval_guard.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/approval_guard.py) - Approval policies
+- [src/magentic_ui/tools/tool_metadata.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/tools/tool_metadata.py) - Tool safety declarations
 
 **"I need to modify agent behavior"**:
-- [src/magentic_ui/agents/_coder.py](src/magentic_ui/agents/_coder.py) - Code execution
-- [src/magentic_ui/agents/web_surfer/_web_surfer.py](src/magentic_ui/agents/web_surfer/_web_surfer.py) - Web browsing
+- [src/magentic_ui/agents/_coder.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/agents/_coder.py) - Code execution
+- [src/magentic_ui/agents/web_surfer/_web_surfer.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/agents/web_surfer/_web_surfer.py) - Web browsing
 
 **"I need to change the UI or API"**:
-- [src/magentic_ui/backend/web/](src/magentic_ui/backend/web/) - FastAPI routes
-- [frontend/src/components/](frontend/src/components/) - React components
+- [src/magentic_ui/backend/web/](https://github.com/andiekobbietks/fara-grc-magentic-ui/tree/main/src/magentic_ui/backend/web) - FastAPI routes
+- [frontend/src/components/](https://github.com/andiekobbietks/fara-grc-magentic-ui/tree/main/frontend/src/components) - React components
 
 **"I need to understand configuration"**:
-- [src/magentic_ui/magentic_ui_config.py](src/magentic_ui/magentic_ui_config.py) - Configuration schema
-- [src/magentic_ui/teams/orchestrator/orchestrator_config.py](src/magentic_ui/teams/orchestrator/orchestrator_config.py) - Orchestrator settings
+- [src/magentic_ui/magentic_ui_config.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/magentic_ui_config.py) - Configuration schema
+- [src/magentic_ui/teams/orchestrator/orchestrator_config.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/teams/orchestrator/orchestrator_config.py) - Orchestrator settings
 
 ## Type Checking & Linting
 - **Mypy**: Strict mode on `src/` (disallows implicit optionals, untyped defs)
@@ -568,7 +568,7 @@ class MyAgent(BaseChatAgent):
         # Process request and return Response
         return Response(...)
 ```
-- Register in [src/magentic_ui/task_team.py](src/magentic_ui/task_team.py)
+- Register in [src/magentic_ui/task_team.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/task_team.py)
 - Configure in MagenticUIConfig.mcp_agent_configs if using MCP
 
 ### Custom Approval Logic
@@ -595,7 +595,7 @@ mcp_config = McpAgentConfig(
 - MCP tools automatically registered
 
 ### Modifying Orchestrator Behavior
-**Key methods** in [src/magentic_ui/teams/orchestrator/_orchestrator.py](src/magentic_ui/teams/orchestrator/_orchestrator.py):
+**Key methods** in [src/magentic_ui/teams/orchestrator/_orchestrator.py](https://github.com/andiekobbietks/fara-grc-magentic-ui/blob/main/src/magentic_ui/teams/orchestrator/_orchestrator.py):
 - `_orchestrate_step_planning()` - Generate/approve plan
 - `_orchestrate_step_execution()` - Execute step
 - `_replan()` - Replan if stuck
@@ -604,8 +604,8 @@ mcp_config = McpAgentConfig(
 - `_request_next_speaker()` - Route to agent
 
 ### Web UI Changes
-- Modify React components in [frontend/src/components/](frontend/src/components/)
-- Update pages in [frontend/src/pages/](frontend/src/pages/)
+- Modify React components in [frontend/src/components/](https://github.com/andiekobbietks/fara-grc-magentic-ui/tree/main/frontend/src/components)
+- Update pages in [frontend/src/pages/](https://github.com/andiekobbietks/fara-grc-magentic-ui/tree/main/frontend/src/pages)
 - Rebuild with `npm run build` (see frontend/README.md)
 
 ## Debugging Tips
