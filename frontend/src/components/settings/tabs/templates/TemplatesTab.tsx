@@ -669,9 +669,9 @@ execution:
                   <li>Approval workflows</li>
                 </ul>
                 <div style={{ marginTop: 16 }}>
-                  <Tag color="blue">Coming Soon</Tag>
+                  <Tag color="blue">Marketplace Coming Soon</Tag>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    Import/Export, Marketplace
+                    Import/Export enabled (.fara)
                   </Typography.Text>
                 </div>
               </div>
@@ -728,7 +728,7 @@ execution:
       
       <Alert
         message="MVP Phase: Template Marketplace Preview"
-        description="Select a template to launch a forensic audit session. Click the info icon above for details."
+        description="Select a template to launch a forensic audit session. You can now export and import templates using the proprietary .fara format."
         type="info"
         showIcon
         style={{ marginBottom: 24, borderRadius: 8 }}
